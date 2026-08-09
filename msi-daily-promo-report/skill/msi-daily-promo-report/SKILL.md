@@ -11,7 +11,7 @@ description: 產出 MSI Store（tw-store.msi.com）每日活動優惠 Excel 報�
 
 ## 固定參數
 
-- 收件人：`RECIPIENT@example.com`（安裝時改成實際信箱，之後不再詢問）
+- 收件人：`rfvwsx527@gmail.com`（安裝時已設定，之後不再詢問）
 - 主旨格式：`【MSI每日活動報告】YYYY-MM-DD`（Apps Script 依此前綴搜尋草稿，**不可更改前綴**）
 - 時區：Asia/Taipei（產報告日期一律用台北時間）
 
