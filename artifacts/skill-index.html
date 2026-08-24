@@ -5,47 +5,35 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Archivo:wght@400;500;600&family=DM+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 
 <style>
-/* ── tokens ───────────────────────────────────────────────── */
+/* ── tokens · 深色為預設，淺色需手動切換 ───────────────────── */
 :root{
-  --bg:#E7E9E5; --panel:#FAFBF8; --panel-hi:#FFFFFF; --sunk:#DEE2DB;
-  --line:#C7CDC5; --hair:#D9DED6;
-  --tx:#171C1A; --tx2:#565F5A; --tx3:#858E88;
-  --accent:#25705C; --on-accent:#FFFFFF; --accent-soft:#D6E5DE;
-  --mark:#EFD37C; --mark-tx:#2A2408;
-  --c-doc:#94631F; --c-shop:#A44F28; --c-design:#A63A66; --c-life:#8447A4;
-  --c-dev:#5450BE; --c-admin:#1A67A4; --c-intel:#0A6F6D; --c-fin:#2A7548;
-  --c-write:#6A6E22; --c-ops:#5C6870;
-  --shadow:0 18px 44px -26px rgba(20,32,28,.45);
-  color-scheme:light;
-  --display:"Bricolage Grotesque","Noto Sans TC","PingFang TC",sans-serif;
-  --body:"Archivo","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --mono:"DM Mono","Noto Sans TC",ui-monospace,monospace;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#11161A; --panel:#191F24; --panel-hi:#1F272C; --sunk:#0D1215;
-    --line:#2B353B; --hair:#222B31;
-    --tx:#E3E9E6; --tx2:#98A5A1; --tx3:#6C7A77;
-    --accent:#54BE9C; --on-accent:#0B1512; --accent-soft:#1B2E29;
-    --mark:#5E5220; --mark-tx:#F6E9BE;
-    --c-doc:#D6A55C; --c-shop:#DE8A5F; --c-design:#E06E97; --c-life:#B983D8;
-    --c-dev:#9791EE; --c-admin:#5CA6DA; --c-intel:#3DB3AD; --c-fin:#5BBA7F;
-    --c-write:#AEB25A; --c-ops:#98A4AB;
-    --shadow:0 22px 48px -28px rgba(0,0,0,.82);
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
   --bg:#11161A; --panel:#191F24; --panel-hi:#1F272C; --sunk:#0D1215;
   --line:#2B353B; --hair:#222B31;
   --tx:#E3E9E6; --tx2:#98A5A1; --tx3:#6C7A77;
   --accent:#54BE9C; --on-accent:#0B1512; --accent-soft:#1B2E29;
+  --wordmark:#D9A75E;
   --mark:#5E5220; --mark-tx:#F6E9BE;
   --c-doc:#D6A55C; --c-shop:#DE8A5F; --c-design:#E06E97; --c-life:#B983D8;
   --c-dev:#9791EE; --c-admin:#5CA6DA; --c-intel:#3DB3AD; --c-fin:#5BBA7F;
   --c-write:#AEB25A; --c-ops:#98A4AB;
   --shadow:0 22px 48px -28px rgba(0,0,0,.82);
   color-scheme:dark;
+  --display:"Bricolage Grotesque","Noto Sans TC","PingFang TC",sans-serif;
+  --body:"Archivo","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"DM Mono","Noto Sans TC",ui-monospace,monospace;
+}
+:root[data-theme="light"]{
+  --bg:#E7E9E5; --panel:#FAFBF8; --panel-hi:#FFFFFF; --sunk:#DEE2DB;
+  --line:#C7CDC5; --hair:#D9DED6;
+  --tx:#171C1A; --tx2:#565F5A; --tx3:#858E88;
+  --accent:#25705C; --on-accent:#FFFFFF; --accent-soft:#D6E5DE;
+  --wordmark:#96661F;
+  --mark:#EFD37C; --mark-tx:#2A2408;
+  --c-doc:#94631F; --c-shop:#A44F28; --c-design:#A63A66; --c-life:#8447A4;
+  --c-dev:#5450BE; --c-admin:#1A67A4; --c-intel:#0A6F6D; --c-fin:#2A7548;
+  --c-write:#6A6E22; --c-ops:#5C6870;
+  --shadow:0 18px 44px -26px rgba(20,32,28,.45);
+  color-scheme:light;
 }
 
 *{box-sizing:border-box}
@@ -65,7 +53,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 .mast{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;padding:34px 0 20px}
 .wordmark h1{
   font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:-.025em;
-  margin:0;line-height:1;
+  margin:0;line-height:1;color:var(--wordmark);
 }
 .wordmark .eyebrow{
   font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.24em;
@@ -187,12 +175,17 @@ button{cursor:pointer;background:none;border:none;padding:0}
 .card{
   position:relative;text-align:left;width:100%;
   background:var(--panel);border:1px solid var(--hair);border-radius:5px;
-  padding:12px 13px 10px;overflow:hidden;
+  padding:12px 13px 10px 17px;overflow:hidden;
   display:flex;flex-direction:column;gap:7px;
   transition:border-color .15s,background .15s,transform .15s;
   animation:rise .3s cubic-bezier(.2,.7,.3,1) backwards;
 }
 @keyframes rise{from{opacity:0;transform:translateY(6px)}}
+.card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--c);transition:width .15s;
+}
+.card:hover::before{width:6px}
 .card:hover{background:var(--panel-hi);border-color:var(--line);transform:translateY(-1px)}
 .card.dragging{opacity:.3}
 .card.over{border-color:var(--accent);border-style:dashed}
@@ -224,7 +217,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px}
 
 .list .grid{grid-template-columns:1fr;gap:4px}
-.list .card{flex-direction:row;align-items:center;gap:12px;padding:8px 13px}
+.list .card{flex-direction:row;align-items:center;gap:12px;padding:8px 13px 8px 17px}
 .list .card .zh{margin-top:0;flex:none;color:var(--tx2)}
 .list .card .name{max-width:220px}
 .list .card .desc{flex:1;-webkit-line-clamp:1;min-width:0}
@@ -674,7 +667,7 @@ function cardEl(s, i, draggable){
   b.dataset.name = s.name;
   b.draggable = draggable;
   b.innerHTML =
-    '<span class="r1"><span class="sw"></span><span class="name">' + hl(s.name) + '</span>' +
+    '<span class="r1"><span class="name">' + hl(s.name) + '</span>' +
       '<span class="chips">' +
         (s.enabled ? '<span class="chip on">已啟用</span>' : "") +
         '<span class="chip' + (s.src === "mine" ? " own" : "") + '">' + ORIGIN_SHORT[s.src] + "</span>" +
@@ -817,12 +810,8 @@ function syncSegs(){
   el("#onlyOn").setAttribute("aria-pressed", String(state.onlyOn));
 }
 
-function themeLabel(){
-  const explicit = document.documentElement.getAttribute("data-theme");
-  const dark = explicit ? explicit === "dark"
-    : matchMedia("(prefers-color-scheme: dark)").matches;
-  el("#themeBtn").textContent = dark ? "淺色" : "深色";
-}
+const isDark = () => document.documentElement.getAttribute("data-theme") !== "light";
+function themeLabel(){ el("#themeBtn").textContent = isDark() ? "淺色" : "深色"; }
 
 function render(){ renderLedger(); syncSegs(); renderTabs(); renderResults(); themeLabel(); }
 
@@ -841,9 +830,7 @@ el("#resetOrder").onclick = () => {
 };
 
 el("#themeBtn").onclick = () => {
-  const explicit = document.documentElement.getAttribute("data-theme");
-  const dark = explicit ? explicit === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  document.documentElement.setAttribute("data-theme", isDark() ? "light" : "dark");
   writePrefs();
   themeLabel();
 };
@@ -854,7 +841,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeDrawer();
   if (e.key === "/" && document.activeElement !== el("#q")){ e.preventDefault(); el("#q").focus(); }
 });
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeLabel);
 
 /* ── boot ──────────────────────────────────────────────────── */
 (async () => {
