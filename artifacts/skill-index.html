@@ -1,0 +1,869 @@
+<title>技能庫 Skill Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Archivo:wght@400;500;600&family=DM+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+
+<style>
+/* ── tokens ───────────────────────────────────────────────── */
+:root{
+  --bg:#E7E9E5; --panel:#FAFBF8; --panel-hi:#FFFFFF; --sunk:#DEE2DB;
+  --line:#C7CDC5; --hair:#D9DED6;
+  --tx:#171C1A; --tx2:#565F5A; --tx3:#858E88;
+  --accent:#25705C; --on-accent:#FFFFFF; --accent-soft:#D6E5DE;
+  --mark:#EFD37C; --mark-tx:#2A2408;
+  --c-doc:#94631F; --c-shop:#A44F28; --c-design:#A63A66; --c-life:#8447A4;
+  --c-dev:#5450BE; --c-admin:#1A67A4; --c-intel:#0A6F6D; --c-fin:#2A7548;
+  --c-write:#6A6E22; --c-ops:#5C6870;
+  --shadow:0 18px 44px -26px rgba(20,32,28,.45);
+  color-scheme:light;
+  --display:"Bricolage Grotesque","Noto Sans TC","PingFang TC",sans-serif;
+  --body:"Archivo","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"DM Mono","Noto Sans TC",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161A; --panel:#191F24; --panel-hi:#1F272C; --sunk:#0D1215;
+    --line:#2B353B; --hair:#222B31;
+    --tx:#E3E9E6; --tx2:#98A5A1; --tx3:#6C7A77;
+    --accent:#54BE9C; --on-accent:#0B1512; --accent-soft:#1B2E29;
+    --mark:#5E5220; --mark-tx:#F6E9BE;
+    --c-doc:#D6A55C; --c-shop:#DE8A5F; --c-design:#E06E97; --c-life:#B983D8;
+    --c-dev:#9791EE; --c-admin:#5CA6DA; --c-intel:#3DB3AD; --c-fin:#5BBA7F;
+    --c-write:#AEB25A; --c-ops:#98A4AB;
+    --shadow:0 22px 48px -28px rgba(0,0,0,.82);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161A; --panel:#191F24; --panel-hi:#1F272C; --sunk:#0D1215;
+  --line:#2B353B; --hair:#222B31;
+  --tx:#E3E9E6; --tx2:#98A5A1; --tx3:#6C7A77;
+  --accent:#54BE9C; --on-accent:#0B1512; --accent-soft:#1B2E29;
+  --mark:#5E5220; --mark-tx:#F6E9BE;
+  --c-doc:#D6A55C; --c-shop:#DE8A5F; --c-design:#E06E97; --c-life:#B983D8;
+  --c-dev:#9791EE; --c-admin:#5CA6DA; --c-intel:#3DB3AD; --c-fin:#5BBA7F;
+  --c-write:#AEB25A; --c-ops:#98A4AB;
+  --shadow:0 22px 48px -28px rgba(0,0,0,.82);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--tx);
+  font-family:var(--body);font-size:14px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+::selection{background:var(--accent-soft);color:var(--tx)}
+
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px 72px}
+
+/* ── masthead ─────────────────────────────────────────────── */
+.mast{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;padding:34px 0 20px}
+.wordmark h1{
+  font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:-.025em;
+  margin:0;line-height:1;
+}
+.wordmark .eyebrow{
+  font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.24em;
+  color:var(--tx3);text-transform:uppercase;margin-bottom:9px;
+}
+.scanline code{color:var(--tx2)}
+.mast-actions{margin-left:auto;display:flex;align-items:center;gap:8px;padding-bottom:3px}
+.btn{
+  border:1px solid var(--line);border-radius:5px;padding:6px 11px;
+  font-family:var(--mono);font-size:11px;color:var(--tx2);letter-spacing:.03em;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.btn:hover{border-color:var(--tx3);color:var(--tx);background:var(--panel)}
+.sync{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10.5px;color:var(--tx3);letter-spacing:.03em;
+  white-space:nowrap;
+}
+.sync i{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.sync[data-state="saving"]{color:var(--tx2)}
+.sync[data-state="synced"]{color:var(--accent)}
+
+/* ── ledger ───────────────────────────────────────────────── */
+.ledger{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  margin-top:4px;
+}
+.ledger .cell{padding:15px 20px 14px}
+.ledger .cell + .cell{border-left:1px solid var(--hair)}
+.ledger .v{
+  font-family:var(--display);font-weight:700;font-size:29px;line-height:1;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+}
+.ledger .v span{font-size:14px;font-weight:500;color:var(--tx2);margin-left:3px;letter-spacing:0}
+.ledger .k{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--tx3);margin-top:8px;
+}
+.scanline{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;
+  font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--tx3);padding:10px 2px 0;
+}
+
+/* ── toolbar ──────────────────────────────────────────────── */
+.toolbar{
+  display:flex;gap:9px;align-items:center;flex-wrap:wrap;
+  padding:13px 0;margin-top:14px;
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:var(--bg);z-index:30;
+}
+.search{position:relative;flex:1 1 260px;max-width:380px}
+.search input{
+  width:100%;background:var(--panel);border:1px solid var(--line);border-radius:5px;
+  padding:8px 32px 8px 32px;outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search .ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none}
+.search kbd{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10px;color:var(--tx3);
+  border:1px solid var(--hair);border-radius:3px;padding:0 5px;transition:opacity .15s;
+}
+.search input:focus ~ kbd{opacity:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.seg button{
+  padding:7px 11px;font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--tx2);
+  border-right:1px solid var(--line);transition:background .14s,color .14s;white-space:nowrap;
+}
+.seg button:last-child{border-right:none}
+.seg button:hover{background:var(--panel)}
+.seg button[aria-pressed="true"]{background:var(--tx);color:var(--bg)}
+.toggle{
+  border:1px solid var(--line);border-radius:5px;padding:7px 11px;
+  font-family:var(--mono);font-size:11px;color:var(--tx2);transition:.14s;white-space:nowrap;
+}
+.toggle:hover{background:var(--panel)}
+.toggle[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.count{
+  margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--tx3);
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.count b{color:var(--tx);font-weight:500}
+
+/* ── body ─────────────────────────────────────────────────── */
+.main{display:grid;grid-template-columns:196px 1fr;gap:30px;margin-top:24px;align-items:start}
+.rail{position:sticky;top:66px}
+.rail h2{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tx3);margin:0 0 10px 3px;font-weight:400;
+}
+.tabs{display:flex;flex-direction:column;gap:1px}
+.tab{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  padding:6px 8px;border-radius:4px;color:var(--tx2);transition:background .14s,color .14s;
+}
+.tab:hover{background:var(--panel);color:var(--tx)}
+.tab[aria-pressed="true"]{background:var(--panel-hi);color:var(--tx);box-shadow:inset 0 0 0 1px var(--hair)}
+.tab .sw{width:8px;height:8px;border-radius:1px;background:var(--c);flex:none;opacity:.5;transition:opacity .14s}
+.tab:hover .sw,.tab[aria-pressed="true"] .sw{opacity:1}
+.tab .nm{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab .n{font-family:var(--mono);font-size:11px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.tab.dragging{opacity:.35}
+.tab.over{box-shadow:inset 0 2px 0 var(--accent)}
+.rail .hint{
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--hair);
+  font-size:11.5px;line-height:1.6;color:var(--tx3);
+}
+
+/* ── groups + cards ───────────────────────────────────────── */
+.group{margin-bottom:34px}
+.ghead{display:flex;align-items:baseline;gap:10px;margin:0 0 13px}
+.ghead .sw{width:9px;height:9px;border-radius:1px;background:var(--c);align-self:center}
+.ghead h3{font-family:var(--display);font-weight:500;font-size:16px;margin:0;letter-spacing:-.01em}
+.ghead .n{font-family:var(--mono);font-size:11px;color:var(--tx3)}
+.ghead .rule{flex:1;height:1px;background:var(--hair)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:10px}
+.card{
+  position:relative;text-align:left;width:100%;
+  background:var(--panel);border:1px solid var(--hair);border-radius:5px;
+  padding:12px 13px 10px;overflow:hidden;
+  display:flex;flex-direction:column;gap:7px;
+  transition:border-color .15s,background .15s,transform .15s;
+  animation:rise .3s cubic-bezier(.2,.7,.3,1) backwards;
+}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}}
+.card:hover{background:var(--panel-hi);border-color:var(--line);transform:translateY(-1px)}
+.card.dragging{opacity:.3}
+.card.over{border-color:var(--accent);border-style:dashed}
+.card .r1{display:flex;align-items:center;gap:7px}
+.card .sw{width:8px;height:8px;border-radius:1px;background:var(--c);flex:none}
+.card .name{
+  font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.card .chips{margin-left:auto;display:flex;gap:4px;flex:none}
+.chip{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;padding:1px 5px;border-radius:3px;
+  border:1px solid var(--hair);color:var(--tx3);white-space:nowrap;
+}
+.chip.own{border-color:var(--tx3);color:var(--tx)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.card .zh{display:block;font-size:12.5px;color:var(--tx);margin-top:-3px}
+.card .desc{
+  font-size:12px;color:var(--tx2);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.card .meta{
+  display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:8px;
+  border-top:1px solid var(--hair);
+  font-family:var(--mono);font-size:10.5px;color:var(--tx3);font-variant-numeric:tabular-nums;
+}
+.card .grip{margin-left:auto;letter-spacing:1.5px;opacity:0;transition:opacity .15s;cursor:grab}
+.card:hover .grip{opacity:.6}
+mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px}
+
+.list .grid{grid-template-columns:1fr;gap:4px}
+.list .card{flex-direction:row;align-items:center;gap:12px;padding:8px 13px}
+.list .card .zh{margin-top:0;flex:none;color:var(--tx2)}
+.list .card .name{max-width:220px}
+.list .card .desc{flex:1;-webkit-line-clamp:1;min-width:0}
+.list .card .meta{margin-top:0;padding-top:0;border-top:none;flex:none}
+.list .card .chips{margin-left:0}
+.list .card .r1{flex:none;gap:7px}
+
+.empty{
+  border:1px dashed var(--line);border-radius:6px;padding:44px 20px;text-align:center;color:var(--tx2);
+}
+.empty b{display:block;color:var(--tx);margin-bottom:6px;font-family:var(--display);font-size:16px;font-weight:500}
+
+/* ── drawer ───────────────────────────────────────────────── */
+.scrim{
+  position:fixed;inset:0;background:rgba(8,14,12,.5);opacity:0;pointer-events:none;
+  transition:opacity .2s;z-index:60;
+}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(470px,100%);z-index:61;
+  background:var(--panel);border-left:1px solid var(--line);box-shadow:var(--shadow);
+  transform:translateX(101%);transition:transform .24s cubic-bezier(.3,.8,.3,1);
+  display:flex;flex-direction:column;
+}
+.drawer.on{transform:none}
+.dhead{padding:22px 24px 16px;border-bottom:1px solid var(--hair);position:relative}
+.dhead .eyebrow{
+  display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--c);
+}
+.dhead .eyebrow .sw{width:8px;height:8px;border-radius:1px;background:var(--c)}
+.dhead h2{font-family:var(--mono);font-size:18px;font-weight:500;margin:10px 0 2px;letter-spacing:-.02em}
+.dhead .zh{color:var(--tx2);font-size:13.5px}
+.dclose{position:absolute;right:16px;top:18px;padding:5px 8px;border-radius:4px;color:var(--tx3);font-size:15px;line-height:1}
+.dclose:hover{background:var(--sunk);color:var(--tx)}
+.dbody{padding:20px 24px 44px;overflow-y:auto;flex:1}
+.sec{margin-bottom:24px}
+.sec h4{
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tx3);margin:0 0 9px;font-weight:400;
+}
+.sec p{margin:0;font-size:13.5px;line-height:1.65}
+.sec .raw{font-family:var(--mono);font-size:11.5px;color:var(--tx2);line-height:1.75}
+.tree{font-family:var(--mono);font-size:11.5px;color:var(--tx2);line-height:1.85}
+.tree div{white-space:pre;overflow-x:auto}
+.tree b{color:var(--tx);font-weight:400}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:12.5px;margin:0}
+.kv dt{font-family:var(--mono);font-size:11px;color:var(--tx3);letter-spacing:.03em}
+.kv dd{margin:0;font-family:var(--mono);font-size:11.5px;word-break:break-all}
+.date-edit{
+  background:var(--sunk);border:1px solid var(--hair);border-radius:4px;padding:2px 6px;
+  font-family:var(--mono);font-size:11.5px;outline:none;
+}
+.date-edit:focus{border-color:var(--accent)}
+.note{font-size:11.5px;line-height:1.6;color:var(--tx3);margin:14px 0 0}
+.note button{font-family:var(--mono);font-size:11px;color:var(--accent);text-decoration:underline}
+
+/* ── toast ────────────────────────────────────────────────── */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);opacity:0;
+  background:var(--tx);color:var(--bg);border-radius:5px;padding:8px 14px;
+  font-family:var(--mono);font-size:11.5px;box-shadow:var(--shadow);
+  z-index:80;pointer-events:none;transition:opacity .18s,transform .18s;
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .main{grid-template-columns:1fr}
+  .rail{position:static;order:2}
+  .tabs{flex-direction:row;flex-wrap:wrap;gap:5px}
+  .tab{width:auto;border:1px solid var(--hair)}
+  .rail .hint{display:none}
+  .toolbar{position:static}
+  .ledger{grid-template-columns:repeat(2,1fr)}
+  .ledger .cell:nth-child(3){border-left:none}
+  .ledger .cell:nth-child(n+3){border-top:1px solid var(--hair)}
+  .count{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="wordmark">
+      <div class="eyebrow">Skill Index</div>
+      <h1>技能庫</h1>
+    </div>
+    <div class="mast-actions">
+      <span class="sync" id="sync" data-state="idle"><i></i><span id="syncTx">讀取中</span></span>
+      <button class="btn" id="resetOrder">回復預設排序</button>
+      <button class="btn" id="themeBtn" aria-live="polite">深色</button>
+    </div>
+  </header>
+
+  <section class="ledger" aria-label="總覽">
+    <div class="cell"><div class="v" id="st-total">—</div><div class="k">技能總數</div></div>
+    <div class="cell"><div class="v" id="st-cats">—</div><div class="k">使用中分類</div></div>
+    <div class="cell"><div class="v" id="st-size">—</div><div class="k">平均文件大小</div></div>
+    <div class="cell"><div class="v" id="st-files">—</div><div class="k">附加參考文件</div></div>
+  </section>
+  <div class="scanline">
+    <span>掃描自 <code>/mnt/skills</code></span>
+    <span aria-hidden="true">·</span>
+    <span id="scanNote"></span>
+    <span aria-hidden="true">·</span>
+    <span>「自建」與「已啟用」的項目會列在 Skills 設定頁，其餘為環境內建</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <input id="q" type="search" placeholder="搜尋名稱、用途、說明檔…" autocomplete="off" spellcheck="false" aria-label="搜尋技能">
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <kbd>/</kbd>
+    </div>
+    <div class="seg" role="group" aria-label="來源">
+      <button data-origin="all" aria-pressed="true">全部</button>
+      <button data-origin="mine" aria-pressed="false">自建</button>
+      <button data-origin="example" aria-pressed="false">範例</button>
+      <button data-origin="builtin" aria-pressed="false">內建</button>
+    </div>
+    <button class="toggle" id="onlyOn" aria-pressed="false">只看已啟用</button>
+    <div class="seg" role="group" aria-label="排序">
+      <button data-sort="cat" aria-pressed="true">依分類</button>
+      <button data-sort="updated" aria-pressed="false">最近更新</button>
+      <button data-sort="name" aria-pressed="false">名稱</button>
+    </div>
+    <div class="seg" role="group" aria-label="檢視">
+      <button data-view="grid" aria-pressed="true">卡片</button>
+      <button data-view="list" aria-pressed="false">清單</button>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <div class="main">
+    <nav class="rail" aria-label="分類">
+      <h2>分類</h2>
+      <div class="tabs" id="tabs"></div>
+      <p class="hint">分類順序、以及同分類內的卡片順序都可以拖曳調整，調整後會自動保存。</p>
+    </nav>
+    <main id="results"></main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dName" inert>
+  <div class="dhead" id="dhead">
+    <div class="eyebrow"><span class="sw"></span><span id="dCat"></span></div>
+    <h2 id="dName"></h2>
+    <div class="zh" id="dZh"></div>
+    <button class="dclose" id="dClose" aria-label="關閉">✕</button>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script id="skill-data" type="application/json">
+{
+"cats":[
+ {"id":"doc","name":"文件處理"},
+ {"id":"design","name":"設計視覺"},
+ {"id":"life","name":"生活助理"},
+ {"id":"shop","name":"購物電商"},
+ {"id":"fin","name":"投資理財"},
+ {"id":"admin","name":"行政庶務"},
+ {"id":"ops","name":"系統維運"},
+ {"id":"intel","name":"情報研究"},
+ {"id":"dev","name":"開發工具"},
+ {"id":"write","name":"內容創作"}
+],
+"skills":[
+{"name":"intelligence-agent-core","zh":"情報總管核心","cat":"intel","src":"mine","enabled":true,"size":"2.0 KB","updated":"2026-07-11","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/user/intelligence-agent-core/","desc":"依公開資訊來源產出週期性情報報告，可輸出成 Google Drive 研究文件、Gmail 草稿或社群貼文。","raw":"當需要根據公開資訊來源，產出週期性情報報告、摘要、Google Drive 研究文件、Gmail 草稿或社群貼文時，請使用此 Skill。"},
+{"name":"msi-daily-promo-report","zh":"MSI 每日優惠報告","cat":"shop","src":"mine","enabled":true,"size":"12.4 KB","updated":"2026-08-09","nfiles":2,"files":["SKILL.md","scripts/build_excel.py"],"path":"/mnt/skills/user/msi-daily-promo-report/","desc":"抓 MSI 商城的活動優惠整理成 Excel，再建立帶附件的 Gmail 草稿，寄送時間交給 Apps Script 控制。","raw":"產出 MSI Store（tw-store.msi.com）每日活動優惠 Excel 報告並建立 Gmail 草稿。當使用者要求「MSI 每日報告」「微星活動報告」「抓 MSI 優惠」，或排程任務指示執行 MSI 活動監控時使用此 skill。抓取限時優惠、福利品、加購方案、組合優惠等專區的商品名稱、原價、活動價、折扣率與庫存，整理成 xlsx 後以附件建立 Gmail 草稿（草稿由使用者的 Apps Script 定時寄出，本 skill 絕不直接寄信）。"},
+{"name":"teppanyaki","zh":"無菜單鐵板燒搜尋","cat":"life","src":"mine","enabled":true,"size":"3.1 KB","updated":"2026-08-18","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/user/teppanyaki/","desc":"在開啟中的 Google 地圖頁面搜尋無菜單鐵板燒，整理成含評分、評論數、價位與營業狀態的摘要。","raw":"在使用者目前開啟的 Google 地圖頁面上搜尋「無菜單鐵板燒」，並將結果整理成聊天摘要（店名、評分、評論數、價位、營業狀態）。只要使用者提到想找鐵板燒、無菜單鐵板燒、teppanyaki 餐廳，或說「幫我搜鐵板燒」「附近有什麼鐵板燒」「用地圖找無菜單料理」等，即使沒有明講 Google 地圖，都應使用此 skill。需要 Claude in Chrome 瀏覽器工具。"},
+{"name":"tt-stock-picking","zh":"TT 選股術估值","cat":"fin","src":"mine","enabled":true,"size":"17.0 KB","updated":"2026-08-16","nfiles":2,"files":["SKILL.md","references/methodology.md"],"path":"/mnt/skills/user/tt-stock-picking/","desc":"用 ROE 定錨的方式算台股個股的基準值、合理價與買賣區間，判斷現在是魚頭區還是該減碼。","raw":"用「TT選股術」（ROE 定錨估值法）判斷一檔台股可不可以投資、算合理價與買賣區間。只要使用者問「這檔股票能不能買」「XX 現在貴不貴」「合理價多少」「幫我用 TT 選股術 / 魚魚理論 / 基準值 / 魚頭區評估」，或要求篩選價值股、判斷股價位階、決定加碼或賣出時機，都必須使用此 skill——即使使用者沒有明講 TT 選股術，只要是台股個股的估值或買賣判斷，就先套用這套方法。"},
+{"name":"tw-stock-news-brief","zh":"台股六雄盤後簡報","cat":"fin","src":"mine","enabled":true,"size":"9.5 KB","updated":"2026-07-24","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/user/tw-stock-news-brief/","desc":"每天盤後整理台積電、聯發科、台達電、鴻海、緯創、臻鼎的重點新聞，各五則要點加上漲跌與大盤走勢。","raw":"產生台股科技六雄（台積電、聯發科、台達電、鴻海、緯創、臻鼎）的盤後新聞簡報。當使用者要求整理股票新聞、盤後報告、台股日報、個股新聞摘要，或排程任務要求產生每日股市簡報時，務必使用此 skill——即使使用者只提到其中一兩家公司或只說「幫我看昨天股市」也應使用。"},
+{"name":"algorithmic-art","zh":"演算法藝術","cat":"design","src":"example","enabled":false,"size":"59.6 KB","updated":"2026-08-21","nfiles":4,"files":["LICENSE.txt","SKILL.md","templates/generator_template.js","templates/viewer.html"],"path":"/mnt/skills/examples/algorithmic-art/","desc":"用 p5.js 寫程式生成藝術作品，可以固定亂數種子重現，也能互動調參數。","raw":"Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users request creating art using code, generative art, algorithmic art, flow fields, or particle systems."},
+{"name":"benepass-reimbursement","zh":"Benepass 請款","cat":"admin","src":"example","enabled":false,"size":"17.2 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/benepass-reimbursement/","desc":"透過 Benepass 平台送出費用核銷，適用公司用這套系統的人。","raw":"Submit expense reimbursements through Benepass (app.getbenepass.com). For users whose employer uses Benepass as their benefits platform. Handles login, benefit selection, form filling, receipt upload, and submission. Requires browser/computer-use capabilities."},
+{"name":"brand-guidelines","zh":"品牌規範套用","cat":"design","src":"example","enabled":false,"size":"13.3 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/brand-guidelines/","desc":"把 Anthropic 官方的品牌色與字體套進各種產出物。","raw":"Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand colors or style guidelines, visual formatting, or company design standards apply."},
+{"name":"call-to-book","zh":"電話訂位","cat":"life","src":"example","enabled":false,"size":"15.1 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/call-to-book/","desc":"打電話幫你訂位或約時間，會先確認行事曆並取得你的明確同意才撥號。","raw":"Make a phone call to book an appointment or reservation. Checks calendar first, gets explicit consent before dialing, discloses AI identity on the call, and adds the booking to calendar when done."},
+{"name":"cancel-unsubscribe","zh":"退訂與解約","cat":"shop","src":"example","enabled":false,"size":"16.7 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/cancel-unsubscribe/","desc":"協助取消訂閱或解約，可以從描述、貼上的帳單或截圖開始處理。","raw":"Cancel a subscription or unsubscribe from a service. Works from a description, a pasted charge line, a URL, or a photo/screenshot. Can also audit a full statement for recurring charges and cancel several at once."},
+{"name":"canvas-design","zh":"視覺設計輸出","cat":"design","src":"example","enabled":false,"size":"5.3 MB","updated":"2026-08-21","nfiles":83,"files":["LICENSE.txt","SKILL.md","canvas-fonts/ArsenalSC-OFL.txt","canvas-fonts/ArsenalSC-Regular.ttf","canvas-fonts/BigShoulders-Bold.ttf","canvas-fonts/BigShoulders-OFL.txt"],"path":"/mnt/skills/examples/canvas-design/","desc":"依設計原則做出可直接使用的 .png 與 .pdf 視覺作品。","raw":"Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece."},
+{"name":"doc-coauthoring","zh":"文件共筆","cat":"doc","src":"example","enabled":false,"size":"15.4 KB","updated":"2026-08-21","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/examples/doc-coauthoring/","desc":"用結構化的流程陪你一起寫文件，一段一段確認方向再往下。","raw":"Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content."},
+{"name":"event-planning","zh":"活動規劃","cat":"life","src":"example","enabled":false,"size":"15.7 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/event-planning/","desc":"從生日聚餐到婚禮都能規劃，規模會依場合自動調整。","raw":"Help plan an event — from a birthday dinner to a wedding. Scales to the size of the occasion. Handles venue research, guest lists, timelines, vendors, and budgets."},
+{"name":"file-expenses","zh":"費用申報","cat":"admin","src":"example","enabled":false,"size":"14.4 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/file-expenses/","desc":"在各種平台上送出費用或核銷，會自動判斷該用哪個系統。","raw":"Help submit an expense or reimbursement on any platform. Detects the right tool (Benepass, Brex, Concur, Expensify, etc.), finds receipts, checks for duplicates, and walks through submission."},
+{"name":"file-form","zh":"表單雜務","cat":"admin","src":"example","enabled":false,"size":"14.5 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/file-form/","desc":"處理陪審通知、罰單、護照更新這類行政小事。","raw":"Handle small bureaucratic tasks — jury duty responses, parking tickets, passport renewals, DMV forms, permit applications, and other government or administrative paperwork."},
+{"name":"financial-calculator","zh":"財務試算","cat":"fin","src":"example","enabled":false,"size":"15.3 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/financial-calculator/","desc":"跑稅務估算、貸款比較、退休金推估這類財務情境的計算與比較。","raw":"Run financial calculations and scenario comparisons — tax estimates, loan comparisons, retirement projections, rent vs. buy, investment scenarios, and more. Pure math, no accounts or logins needed."},
+{"name":"grocery-shopping","zh":"生鮮採買","cat":"life","src":"example","enabled":false,"size":"14.0 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/grocery-shopping/","desc":"協助訂生鮮外送，從選店到依場合配菜的完整流程。","raw":"Help order groceries for delivery. Concierge-style flow — store selection, occasion-based list building, budget tracking, and cart assembly."},
+{"name":"hire-help","zh":"找師傅","cat":"life","src":"example","enabled":false,"size":"14.8 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/hire-help/","desc":"找並預約清潔、水電、搬家、組裝這類服務人員。","raw":"Help find and book a service provider for a task — cleaning, handyman, moving, assembly, yard work, errands, etc. Searches TaskRabbit, Handy, Thumbtack, and similar platforms."},
+{"name":"import-memory","zh":"記憶匯入","cat":"ops","src":"example","enabled":true,"size":"10.4 KB","updated":"2026-08-21","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/examples/import-memory/","desc":"把其他 AI 助理匯出的記憶檔匯進 Claude，以對話方式逐步確認、只增不刪。","raw":"Import a memory export from another AI assistant into Claude's memory — conversationally, additively, and with the content treated as data."},
+{"name":"internal-comms","zh":"內部溝通","cat":"write","src":"example","enabled":false,"size":"21.9 KB","updated":"2026-08-21","nfiles":6,"files":["LICENSE.txt","SKILL.md","examples/3p-updates.md","examples/company-newsletter.md","examples/faq-answers.md","examples/general-comms.md"],"path":"/mnt/skills/examples/internal-comms/","desc":"寫各類內部公告與溝通信件，套用固定的格式與語氣。","raw":"A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use (status reports, leadership updates, 3P updates, etc.)."},
+{"name":"learn","zh":"學習講解","cat":"intel","src":"example","enabled":false,"size":"24.2 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/learn/","desc":"在你想弄懂一件事的原理或原因時，用能理解的方式一層層講清楚。","raw":"Use this skill when the user wants intellectual understanding — learning how or why something works, not getting a task done or soliciting Claude's judgment. Trigger for explicit learning requests: teach, explain, ELI5, walk me through, quiz me, flashcards."},
+{"name":"mcp-builder","zh":"MCP 伺服器建置","cat":"dev","src":"example","enabled":false,"size":"118.9 KB","updated":"2026-08-21","nfiles":10,"files":["LICENSE.txt","SKILL.md","reference/evaluation.md","reference/mcp_best_practices.md","reference/node_mcp_server.md","reference/python_mcp_server.md"],"path":"/mnt/skills/examples/mcp-builder/","desc":"建立高品質的 MCP 伺服器，讓模型能接上外部系統。","raw":"Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools, in Python (FastMCP) or Node/TypeScript."},
+{"name":"meal-delivery","zh":"外送訂餐","cat":"shop","src":"example","enabled":false,"size":"13.9 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/meal-delivery/","desc":"從指定的送達時間往回推算，安排餐點外送。","raw":"Help order food timed to arrive at a specific time. Works backward from target arrival, suggests restaurants, builds cart, and monitors delivery."},
+{"name":"morning","zh":"晨間簡報","cat":"life","src":"example","enabled":true,"size":"39.8 KB","updated":"2026-08-21","nfiles":3,"files":["SKILL.md","assets/fonts/Fraunces-OFL.txt","assets/fonts/fraunces-latin-600-normal.woff2"],"path":"/mnt/skills/examples/morning/","desc":"把每日行程與待辦整理成有排版的 HTML 簡報，也能設成平日自動執行。","raw":"Render the user's morning brief as a styled HTML artifact, or set it up as a recurring weekday task. Use only when the user explicitly asks to run, see, or set up their morning brief."},
+{"name":"paint","zh":"水彩繪圖","cat":"design","src":"example","enabled":false,"size":"107.8 KB","updated":"2026-08-21","nfiles":7,"files":["LICENSE.txt","SKILL.md","examples/full_scene.py","paintkit/__init__.py","paintkit/toolkit.py","reference.md"],"path":"/mnt/skills/examples/paint/","desc":"用寫程式的方式畫出水彩風格的原創圖，不是呼叫繪圖模型。","raw":"Paint an original image in a watercolor style by writing code, not by calling an image model. Use when the user asks you to draw, paint, sketch, or make a picture of something and there is no image-generation tool available."},
+{"name":"prescription-refill","zh":"處方領藥","cat":"life","src":"example","enabled":false,"size":"17.2 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/prescription-refill/","desc":"到藥局續領處方，可從藥名、處方編號或照片開始。","raw":"Refill a prescription at a pharmacy. Works from a medication name, an Rx number, a photo of the bottle, or just “I'm running low.” Confirms exactly what's being requested and handles the refill online or by phone."},
+{"name":"return-refund","zh":"退貨退款","cat":"shop","src":"example","enabled":false,"size":"14.7 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/examples/return-refund/","desc":"協助向任何通路辦退貨或申請退款，會先確認商品與適用政策。","raw":"Help return an item or request a refund from any retailer. Identifies the item, finds the return policy, navigates the process, and handles shipping labels or phone calls."},
+{"name":"setup-writing-style","zh":"寫作風格建檔","cat":"write","src":"example","enabled":false,"size":"65.5 KB","updated":"2026-08-21","nfiles":2,"files":["SKILL.md","scripts/stylometry.py"],"path":"/mnt/skills/examples/setup-writing-style/","desc":"從你寄出的訊息和文件學你的寫法，建一份自己的語氣檔。","raw":"Learns how the user writes from their own sent messages and docs, and builds a voice profile so future drafts sound like them instead of generic AI. The profile is saved as the my-writing-style skill."},
+{"name":"skill-creator","zh":"Skill 產生器","cat":"ops","src":"example","enabled":true,"size":"221.9 KB","updated":"2026-08-21","nfiles":18,"files":["LICENSE.txt","SKILL.md","agents/analyzer.md","agents/comparator.md","agents/grader.md","assets/eval_review.html"],"path":"/mnt/skills/examples/skill-creator/","desc":"從零建立新的 skill，或改寫既有描述讓它更容易被正確觸發，也能跑測試看命中率。","raw":"Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit or optimize an existing skill, run evals to test a skill, or optimize a skill's description for better triggering accuracy."},
+{"name":"slack-gif-creator","zh":"Slack 動圖製作","cat":"design","src":"example","enabled":false,"size":"42.7 KB","updated":"2026-08-21","nfiles":7,"files":["LICENSE.txt","SKILL.md","core/easing.py","core/frame_composer.py","core/gif_builder.py","core/validators.py"],"path":"/mnt/skills/examples/slack-gif-creator/","desc":"做符合 Slack 尺寸與檔案限制的動態 GIF。","raw":"Knowledge and utilities for creating animated GIFs optimized for Slack. Provides constraints, validation tools, and animation concepts."},
+{"name":"theme-factory","zh":"主題樣式工廠","cat":"design","src":"example","enabled":false,"size":"140.7 KB","updated":"2026-08-21","nfiles":13,"files":["LICENSE.txt","SKILL.md","theme-showcase.pdf","themes/arctic-frost.md","themes/botanical-garden.md","themes/desert-rose.md"],"path":"/mnt/skills/examples/theme-factory/","desc":"幫簡報、文件、報表這類產出物套上一致的主題樣式。","raw":"Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts, or generate a new theme on-the-fly."},
+{"name":"web-artifacts-builder","zh":"網頁作品建置","cat":"dev","src":"example","enabled":false,"size":"44.8 KB","updated":"2026-08-21","nfiles":5,"files":["LICENSE.txt","SKILL.md","scripts/bundle-artifact.sh","scripts/init-artifact.sh","scripts/shadcn-components.tar.gz"],"path":"/mnt/skills/examples/web-artifacts-builder/","desc":"建立多元件、結構較複雜的 claude.ai HTML 作品。","raw":"Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui)."},
+{"name":"docx","zh":"Word 文件生成","cat":"doc","src":"builtin","enabled":false,"size":"1.1 MB","updated":"2026-08-21","nfiles":61,"files":["LICENSE.txt","SKILL.md","scripts/__init__.py","scripts/accept_changes.py","scripts/comment.py","scripts/merge_runs.py"],"path":"/mnt/skills/public/docx/","desc":"建立、讀取與修改 Word 檔，支援目錄、頁碼、表格、追蹤修訂與註解。","raw":"Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templates (.dotx files)."},
+{"name":"file-reading","zh":"上傳檔案讀取","cat":"doc","src":"builtin","enabled":false,"size":"14.5 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/public/file-reading/","desc":"上傳檔案的內容不在對話裡時，判斷該用哪種方式讀取哪種格式。","raw":"Use this skill when a file has been uploaded but its content is NOT in your context. This skill is a router: it tells you which tool to use for each file type (pdf, docx, xlsx, csv…)."},
+{"name":"frontend-design","zh":"前端視覺設計","cat":"design","src":"builtin","enabled":false,"size":"18.1 KB","updated":"2026-08-21","nfiles":2,"files":["LICENSE.txt","SKILL.md"],"path":"/mnt/skills/public/frontend-design/","desc":"做新介面或改版時給出明確的美術方向：色票、字體搭配與版面結構。","raw":"Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."},
+{"name":"pdf","zh":"PDF 處理","cat":"doc","src":"builtin","enabled":false,"size":"57.3 KB","updated":"2026-08-21","nfiles":12,"files":["FORMS.md","LICENSE.txt","REFERENCE.md","SKILL.md","scripts/check_bounding_boxes.py","scripts/check_fillable_fields.py"],"path":"/mnt/skills/public/pdf/","desc":"合併切分、旋轉、加浮水印、填表單、加解密，掃描檔可先 OCR 再擷取。","raw":"Use this skill whenever the user wants to do anything with PDF files: reading or extracting text/tables, combining or splitting, rotating pages, adding watermarks, filling forms, encrypting/decrypting, extracting images, and OCR on scanned PDFs."},
+{"name":"pdf-reading","zh":"PDF 內容擷取","cat":"doc","src":"builtin","enabled":false,"size":"17.9 KB","updated":"2026-08-21","nfiles":3,"files":["LICENSE.txt","REFERENCE.md","SKILL.md"],"path":"/mnt/skills/public/pdf-reading/","desc":"讀取與擷取 PDF 內容，含頁面轉圖、內嵌圖片、表格與表單欄位。","raw":"Use this skill when you need to read, inspect, or extract content from PDF files — especially when file content is NOT in your context. Covers content inventory, text extraction, page rasterization, and embedded images."},
+{"name":"pptx","zh":"簡報產生器","cat":"doc","src":"builtin","enabled":false,"size":"1.1 MB","updated":"2026-08-21","nfiles":56,"files":["LICENSE.txt","SKILL.md","scripts/__init__.py","scripts/add_slide.py","scripts/clean.py","scripts/office/helpers/__init__.py"],"path":"/mnt/skills/public/pptx/","desc":"建立與編輯簡報，處理版面、講稿備忘與註解，也能反向抽出全部文字。","raw":"Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. Trigger whenever the user mentions “deck,” “slides,” or “presentation.”"},
+{"name":"product-self-knowledge","zh":"產品知識查核","cat":"ops","src":"builtin","enabled":false,"size":"2.5 KB","updated":"2026-08-21","nfiles":1,"files":["SKILL.md"],"path":"/mnt/skills/public/product-self-knowledge/","desc":"要講到 Anthropic 產品的具體規格、價格或限制時，先來這裡查證而不是憑記憶。","raw":"Stop and consult this skill whenever your response would include specific facts about Anthropic's products: Claude Code, the Claude API, pricing, and platform limits."},
+{"name":"xlsx","zh":"試算表處理","cat":"doc","src":"builtin","enabled":false,"size":"1.1 MB","updated":"2026-08-21","nfiles":53,"files":["LICENSE.txt","SKILL.md","scripts/office/helpers/__init__.py","scripts/office/helpers/pptx_chart.py","scripts/office/helpers/pptx_slide.py","scripts/office/helpers/pptx_theme.py"],"path":"/mnt/skills/public/xlsx/","desc":"建立或修補 Excel 檔：補公式、清資料、加格式與圖表，也能轉換表格格式。","raw":"Use this skill any time a spreadsheet file is the primary input or output: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file, or create a new spreadsheet from scratch."}
+]
+}
+</script>
+
+<script>
+(() => {
+"use strict";
+
+/* ── data ──────────────────────────────────────────────────── */
+const DATA   = JSON.parse(document.getElementById("skill-data").textContent);
+const CATS   = DATA.cats;
+const SKILLS = DATA.skills;
+const CMAP   = Object.fromEntries(CATS.map(c => [c.id, c]));
+SKILLS.forEach(s => { s.updated0 = s.updated; });
+
+const ORIGIN_LABEL = { mine:"自建（你寫的）", example:"Anthropic 範例", builtin:"Claude 內建" };
+const ORIGIN_SHORT = { mine:"自建", example:"範例", builtin:"內建" };
+const ORIGIN_FILTER = { mine:"自建", example:"範例", builtin:"內建" };
+
+const el = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const escRe = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/* ── state ─────────────────────────────────────────────────── */
+const PREF_KEY  = "skill-index/prefs";
+const SHARED_KEY = "skill-index/shared";
+const STATE_FILE = "data/index-state.json";
+
+const state = {
+  q:"", cat:"all", origin:"all", onlyOn:false, sort:"cat", view:"grid",
+  catOrder: CATS.map(c => c.id),
+  order: SKILLS.map(s => s.name),
+  dates: {},
+};
+
+/* ── persistence ───────────────────────────────────────────── */
+let api = null;           // artifact capability, or null → 本機保存
+let saveTimer = null, retried = false;
+
+const payload = () => ({ v:4, savedAt:Date.now(), catOrder:state.catOrder, order:state.order, dates:state.dates });
+
+function setSync(st, tx){ const n = el("#sync"); n.dataset.state = st; el("#syncTx").textContent = tx; }
+
+function adopt(d){
+  if (!d || typeof d !== "object") return;
+  if (Array.isArray(d.catOrder) && d.catOrder.length === CATS.length) state.catOrder = d.catOrder.filter(id => CMAP[id]);
+  if (Array.isArray(d.order)) state.order = d.order.slice();
+  if (d.dates && typeof d.dates === "object") state.dates = d.dates;
+}
+
+function reconcile(){
+  CATS.forEach(c => { if (!state.catOrder.includes(c.id)) state.catOrder.push(c.id); });
+  const live = new Set(SKILLS.map(s => s.name));
+  state.order = state.order.filter(n => live.has(n));
+  SKILLS.forEach(s => { if (!state.order.includes(s.name)) state.order.unshift(s.name); });
+  SKILLS.forEach(s => { s.updated = state.dates[s.name] || s.updated0; });
+}
+
+function readLocal(){ try { return JSON.parse(localStorage.getItem(SHARED_KEY) || "null"); } catch { return null; } }
+function writeLocal(){ try { localStorage.setItem(SHARED_KEY, JSON.stringify(payload())); } catch {} }
+
+function readPrefs(){
+  try {
+    const p = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
+    if (!p) return;
+    if (["grid","list"].includes(p.view)) state.view = p.view;
+    if (["cat","updated","name"].includes(p.sort)) state.sort = p.sort;
+    if (p.theme === "dark" || p.theme === "light") document.documentElement.setAttribute("data-theme", p.theme);
+  } catch {}
+}
+function writePrefs(){
+  try {
+    localStorage.setItem(PREF_KEY, JSON.stringify({
+      view: state.view, sort: state.sort,
+      theme: document.documentElement.getAttribute("data-theme") || "",
+    }));
+  } catch {}
+}
+
+async function loadShared(){
+  const local = readLocal();
+  let remote = null;
+  try {
+    const r = await fetch(STATE_FILE, { cache:"no-store" });
+    if (r.ok) remote = await r.json();
+  } catch {}
+  const pick = !remote ? local : !local ? remote
+    : ((local.savedAt || 0) > (remote.savedAt || 0) ? local : remote);
+  adopt(pick);
+  reconcile();
+}
+
+function scheduleSave(){
+  writeLocal();
+  if (!api) { setSync("idle", "只存在這台裝置"); return; }
+  setSync("saving", "儲存中");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(pushShared, 1400);
+}
+
+async function pushShared(){
+  if (!api) return;
+  try {
+    await api.publish({ [STATE_FILE]: JSON.stringify(payload()) });
+    retried = false;
+    setSync("synced", "已保存");
+  } catch (err) {
+    const code = err && err.code;
+    if (code === "conflict") return;                       // 其他分頁先存了，畫面會自動更新
+    if (code === "rate_limited" && !retried) {
+      retried = true;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(pushShared, 6000);
+      return;
+    }
+    api = null;
+    setSync("idle", "只存在這台裝置");
+  }
+}
+
+/* ── filtering ─────────────────────────────────────────────── */
+const byName = n => SKILLS.find(s => s.name === n);
+const ordered = () => state.order.map(byName).filter(Boolean);
+
+function matches(s){
+  if (state.cat !== "all" && s.cat !== state.cat) return false;
+  if (state.origin !== "all" && s.src !== state.origin) return false;
+  if (state.onlyOn && !s.enabled) return false;
+  const q = state.q.trim().toLowerCase();
+  if (!q) return true;
+  const hay = [s.name, s.zh, s.desc, s.raw, CMAP[s.cat].name, ORIGIN_SHORT[s.src], s.path].join(" ").toLowerCase();
+  return q.split(/\s+/).every(t => hay.includes(t));
+}
+
+function hl(text){
+  const q = state.q.trim();
+  if (!q) return esc(text);
+  const parts = q.split(/\s+/).filter(Boolean).map(escRe);
+  return esc(text).replace(new RegExp("(" + parts.join("|") + ")", "gi"), "<mark>$1</mark>");
+}
+
+/* ── ledger ────────────────────────────────────────────────── */
+const toKB = v => { const m = String(v).match(/([\d.]+)\s*(KB|MB)?/i); if (!m) return null;
+  const n = parseFloat(m[1]); return isNaN(n) ? null : (/mb/i.test(m[2] || "") ? n * 1024 : n); };
+
+function renderLedger(){
+  const kb = SKILLS.map(s => toKB(s.size)).filter(n => n !== null);
+  const avg = kb.length ? kb.reduce((a, b) => a + b, 0) / kb.length : 0;
+  const extra = SKILLS.reduce((n, s) => n + Math.max((s.nfiles || s.files.length) - 1, 0), 0);
+  el("#st-total").textContent = SKILLS.length;
+  el("#st-cats").textContent  = new Set(SKILLS.map(s => s.cat)).size;
+  el("#st-size").innerHTML    = (avg >= 1024 ? (avg / 1024).toFixed(1) : avg.toFixed(1)) +
+                                '<span>' + (avg >= 1024 ? "MB" : "KB") + '</span>';
+  el("#st-files").textContent = extra;
+
+  const n = { mine:0, example:0, builtin:0 };
+  SKILLS.forEach(s => n[s.src]++);
+  document.querySelectorAll("[data-origin]").forEach(b => {
+    const k = b.dataset.origin;
+    b.textContent = (k === "all" ? "全部" : ORIGIN_FILTER[k]) + " " + (k === "all" ? SKILLS.length : n[k]);
+  });
+  el("#onlyOn").textContent = "只看已啟用 " + SKILLS.filter(s => s.enabled).length;
+
+  const last = SKILLS.map(s => s.updated0).sort().pop();
+  el("#scanNote").textContent = "最後一次掃描 " + last + " · 共 " + SKILLS.length + " 個 SKILL.md";
+}
+
+/* ── rail ──────────────────────────────────────────────────── */
+function renderTabs(){
+  const box = el("#tabs");
+  box.textContent = "";
+  const mk = (id, name, count, color) => {
+    const b = document.createElement("button");
+    b.className = "tab";
+    b.style.setProperty("--c", color);
+    b.setAttribute("aria-pressed", String(state.cat === id));
+    b.innerHTML = '<span class="sw"></span><span class="nm">' + esc(name) + '</span><span class="n">' + count + "</span>";
+    b.onclick = () => { state.cat = (state.cat === id ? "all" : id); render(); };
+    return b;
+  };
+  box.appendChild(mk("all", "全部", SKILLS.length, "var(--tx3)"));
+  state.catOrder.forEach(id => {
+    const cat = CMAP[id];
+    const b = mk(id, cat.name, SKILLS.filter(s => s.cat === id).length, "var(--c-" + id + ")");
+    b.draggable = true;
+    b.dataset.cat = id;
+    wireDrag(b, "cat");
+    box.appendChild(b);
+  });
+}
+
+/* ── results ───────────────────────────────────────────────── */
+function renderResults(){
+  const root = el("#results");
+  root.className = state.view === "list" ? "list" : "";
+  const hits = ordered().filter(matches);
+  el("#count").innerHTML = "顯示 <b>" + hits.length + "</b> / " + SKILLS.length;
+  root.textContent = "";
+
+  if (!hits.length){
+    root.innerHTML = '<div class="empty"><b>沒有符合的技能</b>換個關鍵字，或把分類與來源篩選清掉再看一次。</div>';
+    return;
+  }
+
+  if (state.sort === "cat"){
+    state.catOrder.forEach(cid => {
+      const items = hits.filter(s => s.cat === cid);
+      if (!items.length) return;
+      const g = document.createElement("section");
+      g.className = "group";
+      g.style.setProperty("--c", "var(--c-" + cid + ")");
+      g.innerHTML = '<div class="ghead"><span class="sw"></span><h3>' + esc(CMAP[cid].name) +
+                    '</h3><span class="n">' + items.length + '</span><span class="rule"></span></div>';
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      items.forEach((s, i) => grid.appendChild(cardEl(s, i, true)));
+      g.appendChild(grid);
+      root.appendChild(g);
+    });
+  } else {
+    const sorted = hits.slice().sort((a, b) =>
+      state.sort === "updated" ? b.updated.localeCompare(a.updated) : a.name.localeCompare(b.name));
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    sorted.forEach((s, i) => grid.appendChild(cardEl(s, i, false)));
+    root.appendChild(grid);
+  }
+}
+
+function cardEl(s, i, draggable){
+  const b = document.createElement("button");
+  b.className = "card";
+  b.style.setProperty("--c", "var(--c-" + s.cat + ")");
+  b.style.animationDelay = Math.min(i * 18, 220) + "ms";
+  b.dataset.name = s.name;
+  b.draggable = draggable;
+  b.innerHTML =
+    '<span class="r1"><span class="sw"></span><span class="name">' + hl(s.name) + '</span>' +
+      '<span class="chips">' +
+        (s.enabled ? '<span class="chip on">已啟用</span>' : "") +
+        '<span class="chip' + (s.src === "mine" ? " own" : "") + '">' + ORIGIN_SHORT[s.src] + "</span>" +
+      "</span></span>" +
+    '<span class="zh">' + hl(s.zh) + "</span>" +
+    '<span class="desc">' + hl(s.desc) + "</span>" +
+    '<span class="meta"><span>' + s.updated + "</span><span>" + esc(s.size) + "</span>" +
+      (draggable ? '<span class="grip" aria-hidden="true">⣿</span>'
+                 : '<span style="margin-left:auto">' + esc(CMAP[s.cat].name) + "</span>") +
+    "</span>";
+  b.onclick = () => openDrawer(s);
+  if (draggable) wireDrag(b, "skill");
+  return b;
+}
+
+/* ── drag to reorder ───────────────────────────────────────── */
+let dragKind = null, dragId = null;
+
+function wireDrag(node, kind){
+  const idOf = n => kind === "cat" ? n.dataset.cat : n.dataset.name;
+  const sameCat = t => kind !== "skill" || byName(t).cat === byName(dragId).cat;
+
+  node.addEventListener("dragstart", e => {
+    dragKind = kind; dragId = idOf(node);
+    node.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    try { e.dataTransfer.setData("text/plain", dragId); } catch {}
+  });
+  node.addEventListener("dragend", () => {
+    node.classList.remove("dragging");
+    document.querySelectorAll(".over").forEach(n => n.classList.remove("over"));
+    dragKind = dragId = null;
+  });
+  node.addEventListener("dragover", e => {
+    if (dragKind !== kind) return;
+    const t = idOf(node);
+    if (t === dragId || !sameCat(t)) return;
+    e.preventDefault();
+    node.classList.add("over");
+  });
+  node.addEventListener("dragleave", () => node.classList.remove("over"));
+  node.addEventListener("drop", e => {
+    e.preventDefault();
+    node.classList.remove("over");
+    if (dragKind !== kind) return;
+    const t = idOf(node);
+    if (t === dragId || !sameCat(t)) return;
+    const arr = kind === "cat" ? state.catOrder : state.order;
+    const from = arr.indexOf(dragId), to = arr.indexOf(t);
+    if (from < 0 || to < 0) return;
+    arr.splice(to, 0, arr.splice(from, 1)[0]);
+    scheduleSave();
+    render();
+    toast(kind === "cat" ? "分類順序已更新" : "卡片順序已更新");
+  });
+}
+
+/* ── drawer ────────────────────────────────────────────────── */
+let lastFocus = null;
+
+function openDrawer(s){
+  if (!el("#drawer").classList.contains("on")) lastFocus = document.activeElement;
+  const cat = CMAP[s.cat], color = "var(--c-" + s.cat + ")";
+  el("#dhead").style.setProperty("--c", color);
+  el("#dCat").textContent = cat.name;
+  el("#dName").textContent = s.name;
+  el("#dZh").textContent = s.zh;
+
+  const overridden = !!state.dates[s.name];
+  el("#dbody").innerHTML =
+    '<div class="sec"><h4>用途</h4><p>' + esc(s.desc) + "</p></div>" +
+    '<div class="sec"><h4>說明檔描述</h4><p class="raw">' + esc(s.raw) + "</p></div>" +
+    '<div class="sec"><h4>檔案 · 共 ' + s.nfiles + ' 個</h4><div class="tree">' +
+      s.files.map((f, i) => "<div>" + (i === s.files.length - 1 && s.nfiles === s.files.length ? "└─ " : "├─ ") +
+        "<b>" + esc(f) + "</b></div>").join("") +
+      (s.nfiles > s.files.length ? "<div>└─ …另外 " + (s.nfiles - s.files.length) + " 個檔案</div>" : "") +
+    "</div></div>" +
+    '<div class="sec"><h4>資訊</h4><dl class="kv">' +
+      "<dt>分類</dt><dd>" + esc(cat.name) + "</dd>" +
+      "<dt>來源</dt><dd>" + ORIGIN_LABEL[s.src] + "</dd>" +
+      "<dt>狀態</dt><dd>" + (s.enabled ? "已在 Skills 設定頁啟用" : "環境內可用，未啟用") + "</dd>" +
+      "<dt>大小</dt><dd>" + esc(s.size) + "</dd>" +
+      '<dt>最後更新</dt><dd><input class="date-edit" type="date" id="dDate" value="' + esc(s.updated) + '"></dd>' +
+      "<dt>路徑</dt><dd>" + esc(s.path) + "</dd>" +
+    "</dl>" +
+    (overridden
+      ? '<p class="note">已手動調整（掃描值為 ' + s.updated0 + '）· <button id="dDateReset">還原</button></p>'
+      : '<p class="note">日期可以改成你自己維護的版本時間。</p>') +
+    "</div>";
+
+  el("#dDate").addEventListener("change", e => {
+    const v = e.target.value;
+    if (v) state.dates[s.name] = v; else delete state.dates[s.name];
+    s.updated = v || s.updated0;
+    scheduleSave();
+    render();
+    openDrawer(s);
+    toast("最後更新已改為 " + s.updated);
+  });
+  const rst = el("#dDateReset");
+  if (rst) rst.onclick = () => {
+    delete state.dates[s.name];
+    s.updated = s.updated0;
+    scheduleSave();
+    render();
+    openDrawer(s);
+    toast("已還原掃描日期");
+  };
+
+  const d = el("#drawer");
+  d.removeAttribute("inert");
+  d.classList.add("on");
+  el("#scrim").classList.add("on");
+  el("#dClose").focus();
+}
+
+function closeDrawer(){
+  const d = el("#drawer");
+  if (!d.classList.contains("on")) return;
+  d.classList.remove("on");
+  d.setAttribute("inert", "");
+  el("#scrim").classList.remove("on");
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+
+/* ── chrome ────────────────────────────────────────────────── */
+let toastTimer;
+function toast(msg){
+  const t = el("#toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 1700);
+}
+
+function syncSegs(){
+  document.querySelectorAll("[data-origin]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.origin === state.origin)));
+  document.querySelectorAll("[data-sort]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sort === state.sort)));
+  document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
+  el("#onlyOn").setAttribute("aria-pressed", String(state.onlyOn));
+}
+
+function themeLabel(){
+  const explicit = document.documentElement.getAttribute("data-theme");
+  const dark = explicit ? explicit === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  el("#themeBtn").textContent = dark ? "淺色" : "深色";
+}
+
+function render(){ renderLedger(); syncSegs(); renderTabs(); renderResults(); themeLabel(); }
+
+el("#q").addEventListener("input", e => { state.q = e.target.value; renderResults(); });
+document.querySelectorAll("[data-origin]").forEach(b => b.onclick = () => { state.origin = b.dataset.origin; syncSegs(); renderResults(); });
+document.querySelectorAll("[data-sort]").forEach(b => b.onclick = () => { state.sort = b.dataset.sort; writePrefs(); syncSegs(); renderResults(); });
+document.querySelectorAll("[data-view]").forEach(b => b.onclick = () => { state.view = b.dataset.view; writePrefs(); syncSegs(); renderResults(); });
+el("#onlyOn").onclick = () => { state.onlyOn = !state.onlyOn; syncSegs(); renderResults(); };
+
+el("#resetOrder").onclick = () => {
+  state.catOrder = CATS.map(c => c.id);
+  state.order = SKILLS.map(s => s.name);
+  scheduleSave();
+  render();
+  toast("已回復預設排序");
+};
+
+el("#themeBtn").onclick = () => {
+  const explicit = document.documentElement.getAttribute("data-theme");
+  const dark = explicit ? explicit === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  writePrefs();
+  themeLabel();
+};
+
+el("#dClose").onclick = closeDrawer;
+el("#scrim").onclick = closeDrawer;
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeDrawer();
+  if (e.key === "/" && document.activeElement !== el("#q")){ e.preventDefault(); el("#q").focus(); }
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeLabel);
+
+/* ── boot ──────────────────────────────────────────────────── */
+(async () => {
+  readPrefs();
+  try { api = window.claude ? await window.claude.use("artifact") : null; } catch { api = null; }
+  await loadShared();
+  render();
+  setSync(api ? "synced" : "idle", api ? "已保存" : "只存在這台裝置");
+})();
+
+})();
+</script>
