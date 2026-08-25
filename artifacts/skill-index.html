@@ -5,7 +5,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Archivo:wght@400;500;600&family=DM+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 
 <style>
-/* ── tokens · 深色為預設，淺色需手動切換 ───────────────────── */
+/* ── tokens ──────────────────────────────────────────────────
+   深色是這一頁的預設，淺色只在按下切換鈕（data-skin="light"）時套用。
+   刻意不使用 data-theme：檢視器會依讀者的 claude.ai 佈景在 <html>
+   上蓋這個屬性，會把頁面的預設蓋掉。
+   ─────────────────────────────────────────────────────────── */
 :root{
   --bg:#12151B; --panel:#1F242D; --panel-hi:#252B36; --sunk:#171B23;
   --line:#2C333F; --hair:#232935;
@@ -22,7 +26,7 @@
   --body:"Archivo","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   --mono:"DM Mono","Noto Sans TC",ui-monospace,monospace;
 }
-:root[data-theme="light"]{
+:root[data-skin="light"]{
   --bg:#E7E9E5; --panel:#FAFBF8; --panel-hi:#FFFFFF; --sunk:#DEE2DB;
   --line:#C7CDC5; --hair:#D9DED6;
   --tx:#171C1A; --tx2:#565F5A; --tx3:#858E88;
@@ -508,14 +512,14 @@ function readPrefs(){
     if (!p) return;
     if (["grid","list"].includes(p.view)) state.view = p.view;
     if (["cat","updated","name"].includes(p.sort)) state.sort = p.sort;
-    if (p.theme === "dark" || p.theme === "light") document.documentElement.setAttribute("data-theme", p.theme);
+    if (p.theme === "dark" || p.theme === "light") document.documentElement.setAttribute("data-skin", p.theme);
   } catch {}
 }
 function writePrefs(){
   try {
     localStorage.setItem(PREF_KEY, JSON.stringify({
       view: state.view, sort: state.sort,
-      theme: document.documentElement.getAttribute("data-theme") || "",
+      theme: document.documentElement.getAttribute("data-skin") || "",
     }));
   } catch {}
 }
@@ -826,7 +830,7 @@ function syncSegs(){
   el("#onlyOn").setAttribute("aria-pressed", String(state.onlyOn));
 }
 
-const isDark = () => document.documentElement.getAttribute("data-theme") !== "light";
+const isDark = () => document.documentElement.getAttribute("data-skin") !== "light";
 function themeLabel(){ el("#themeBtn").textContent = isDark() ? "淺色" : "深色"; }
 
 function render(){ renderLedger(); stamp(); syncSegs(); renderTabs(); renderResults(); themeLabel(); }
@@ -846,7 +850,7 @@ el("#resetOrder").onclick = () => {
 };
 
 el("#themeBtn").onclick = () => {
-  document.documentElement.setAttribute("data-theme", isDark() ? "light" : "dark");
+  document.documentElement.setAttribute("data-skin", isDark() ? "light" : "dark");
   writePrefs();
   themeLabel();
 };
