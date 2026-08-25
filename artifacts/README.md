@@ -43,15 +43,27 @@ frontmatter 的 `description`。中文名 `zh`、分類 `cat`、一句話用途 
 
 ## 每小時自動更新
 
-排程會開一個新 session 執行：
+Routine `技能庫儀表板每小時重掃`（trig_0174Dt3YMXeN9GNZVJdSZ9J9，每小時第 27 分）會開一個
+新 session，流程是：切到本分支 → 用 Artifact `action: read` 把**目前線上那一版**存成本機
+檔 → `python3 artifacts/update-dashboard.py --baseline <那個檔>` → 退出碼 0 才重新發佈。
 
-```sh
-python3 artifacts/update-dashboard.py
-```
+三個設計上的坑，都是實際觸發後才發現的：
 
-- 退出碼 **2** = 沒有變動，直接結束，不發佈也不 commit（避免每小時灌版本）。
-- 退出碼 **0** = 已把新清單寫進 `skill-index.html` 的內建快照，接著重新發佈與 commit。
+1. **repo 的預設分支沒有 artifacts/**。新 session 預設 clone 預設分支，找不到腳本就會
+   自己去 `find /` 找，然後卡在權限詢問上——排程執行時沒有人能批准，等於永久停住。
+   所以指令裡明確要求先 checkout 本分支，並禁止掃描磁碟。
+2. **排程 session 不見得能 git push**。所以 git 完全移出流程。
+3. **因此比對基準不能用 repo 裡的檔案**。推不上去的話基準永遠停在舊版，同一個變動會
+   每小時被重新發佈一次。改用線上頁面當基準——那是排程唯一能可靠寫入的狀態。
 
-session 只能發佈 HTML、寫不了 `data/skills.json`，所以排程更新的是**內建快照**；
-手動匯入更新的是**資料檔**。兩條路徑都會帶 `scannedAt`，頁面開啟時**取較新的那份**，
-否則舊資料檔會永遠蓋掉排程的結果。
+驗證紀錄（四次手動觸發）：
+
+| 執行 | 情境 | 結果 |
+|---|---|---|
+| 1 | 舊指令，無變動 | 結束但無從確認是否真的掃過 |
+| 2 | 舊指令，有差異 | **卡死**在 `find /` 的權限詢問 |
+| 3 | 新指令，有差異 | 偵測到「異動 1：docx」，發佈到既有網址（未另建）✓ |
+| 4 | 新指令，無變動 | 退出碼 2，**未發佈**（session 紀錄無 artifacts 欄位）✓ |
+
+若本分支被刪除或改名，排程會回報「找不到 artifacts/update-dashboard.py」並停止，
+不會誤發佈。
