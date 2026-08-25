@@ -43,7 +43,7 @@ frontmatter 的 `description`。中文名 `zh`、分類 `cat`、一句話用途 
 
 ## 每日自動更新
 
-Routine `技能庫儀表板每日重掃（台北 09:00）`（trig_0174Dt3YMXeN9GNZVJdSZ9J9，
+Routine `技能庫儀表板每日重掃（台北 09:00）`（trig_012GBVX2otuNRaodfcbzib4c，
 cron `0 1 * * *`＝台北時間每天 09:00）會開一個
 新 session，流程是：切到本分支 → 用 Artifact `action: read` 把**目前線上那一版**存成本機
 檔 → `python3 artifacts/update-dashboard.py --baseline <那個檔>` → 退出碼 0 才重新發佈。
