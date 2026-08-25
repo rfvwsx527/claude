@@ -1,0 +1,383 @@
+<title>技能庫製作紀錄</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500&family=DM+Mono:wght@300;400;500&display=swap">
+
+<style>
+/* 這份簡報刻意只做深色：它是投影的舞台，不是隨環境變裝的文件。
+   因此每個顏色都明確畫出來，不倚賴宿主底色。 */
+:root{
+  --ink:#0E1116; --stage:#141920; --panel:#1A212A; --rule:#252E39; --hair:#1E2630;
+  --tx:#FFFFFF; --tx2:#A8B2C0; --tx3:#6E7885;
+  --amber:#E2A03F; --amber-dim:rgba(226,160,63,.14);
+  --bad:#F0698E; --good:#57B894;
+  /* 儀表板的十個分類色——頂端光譜條是真的資料，不是裝飾 */
+  --c1:#E2A03F; --c2:#EF7D57; --c3:#F0698E; --c4:#E86A9B; --c5:#9B7BE0;
+  --c6:#4EA1D3; --c7:#4EC5C1; --c8:#57B894; --c9:#D9C24E; --c10:#7C8AA0;
+  --serif:"Noto Serif TC",Georgia,"Songti TC",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"DM Mono","Noto Sans TC",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--ink);color:var(--tx);
+  font-family:var(--sans);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+
+/* ── 卷軸與換頁 ─────────────────────────────────────────── */
+.deck{height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+.slide{
+  min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;
+  display:grid;grid-template-columns:88px minmax(0,1fr);
+  position:relative;background:var(--ink);
+}
+.slide + .slide{border-top:1px solid var(--hair)}
+
+/* 光譜條：十段＝十個分類 */
+.spectrum{position:absolute;inset:0 0 auto 0;height:3px;display:flex}
+.spectrum i{flex:1}
+.spectrum i:nth-child(1){background:var(--c1)} .spectrum i:nth-child(2){background:var(--c2)}
+.spectrum i:nth-child(3){background:var(--c3)} .spectrum i:nth-child(4){background:var(--c4)}
+.spectrum i:nth-child(5){background:var(--c5)} .spectrum i:nth-child(6){background:var(--c6)}
+.spectrum i:nth-child(7){background:var(--c7)} .spectrum i:nth-child(8){background:var(--c8)}
+.spectrum i:nth-child(9){background:var(--c9)} .spectrum i:nth-child(10){background:var(--c10)}
+
+/* 裝訂邊 */
+.gutter{
+  border-right:1px solid var(--hair);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:52px 0 40px;gap:16px;
+}
+.gutter .num{
+  font-family:var(--serif);font-weight:700;font-size:38px;color:var(--amber);
+  line-height:1;font-variant-numeric:lining-nums;
+}
+.gutter .tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.34em;color:var(--tx3);
+  writing-mode:vertical-rl;text-orientation:upright;
+}
+
+.body{
+  padding:56px 60px;display:flex;flex-direction:column;justify-content:center;
+  gap:26px;max-width:1240px;width:100%;margin:0 auto;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--tx3);
+}
+h1{
+  font-family:var(--serif);font-weight:700;font-size:clamp(30px,3.9vw,46px);line-height:1.22;
+  margin:0;letter-spacing:.01em;text-wrap:balance;
+}
+h1 em{font-style:normal;color:var(--amber)}
+.lede{font-size:16px;color:var(--tx2);max-width:60ch;margin:0}
+
+/* ── 條列 ───────────────────────────────────────────────── */
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 40px}
+.block h3{
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx3);margin:0 0 10px;
+}
+ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+li{position:relative;padding-left:18px;font-size:14.5px;color:var(--tx2);line-height:1.62}
+li::before{
+  content:"";position:absolute;left:0;top:.68em;width:6px;height:1px;background:var(--tx3);
+}
+li b{color:var(--tx);font-weight:500}
+li code,code{font-family:var(--mono);font-size:12.5px;color:var(--amber)}
+
+/* 缺陷條列：左側細線標示嚴重度 */
+.faults{display:flex;flex-direction:column;gap:12px}
+.fault{
+  border-left:2px solid var(--bad);padding:2px 0 2px 14px;
+}
+.fault .what{font-size:14.5px;color:var(--tx);font-weight:500}
+.fault .why{font-size:13.5px;color:var(--tx3);margin-top:2px}
+
+/* ── 數據列 ─────────────────────────────────────────────── */
+.figures{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--rule);padding-top:18px}
+.fig{padding-right:38px;margin-right:38px;border-right:1px solid var(--hair)}
+.fig:last-child{border-right:none;margin-right:0;padding-right:0}
+.fig .v{
+  font-family:var(--serif);font-weight:700;font-size:34px;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.fig .v small{font-family:var(--sans);font-size:14px;font-weight:400;color:var(--tx2);margin-left:4px}
+.fig .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--tx3);margin-top:8px}
+
+/* ── 流程圖 ─────────────────────────────────────────────── */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px}
+.step{
+  background:var(--stage);border:1px solid var(--rule);border-radius:4px;
+  padding:12px 15px;min-width:150px;flex:0 0 auto;
+}
+.step .t{font-family:var(--mono);font-size:12px;color:var(--tx);margin-bottom:4px}
+.step .d{font-size:12.5px;color:var(--tx3);line-height:1.5}
+.step.here{border-color:var(--amber);background:var(--amber-dim)}
+.arrow{
+  flex:0 0 34px;align-self:center;height:1px;background:var(--rule);position:relative;
+}
+.arrow::after{
+  content:"";position:absolute;right:0;top:-3px;
+  border-left:6px solid var(--rule);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;
+}
+.sources{display:flex;flex-direction:column;gap:5px;flex:0 0 auto}
+.src{
+  font-family:var(--mono);font-size:11.5px;color:var(--tx2);
+  border:1px solid var(--hair);border-radius:3px;padding:5px 10px;background:var(--stage);
+}
+.src span{color:var(--tx3)}
+
+/* ── 註記 ───────────────────────────────────────────────── */
+.note{
+  border-top:1px solid var(--rule);padding-top:16px;
+  font-size:13.5px;color:var(--tx3);line-height:1.65;max-width:70ch;
+}
+.note b{color:var(--tx2);font-weight:500}
+.cta{
+  display:inline-flex;align-items:center;gap:9px;align-self:flex-start;
+  font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--amber);
+  text-decoration:none;padding:9px 16px;border-radius:4px;
+}
+.cta:hover{filter:brightness(1.08)}
+
+/* ── 頁碼 ───────────────────────────────────────────────── */
+.pager{
+  position:fixed;right:26px;bottom:24px;z-index:20;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;color:var(--tx3);
+}
+.dots{display:flex;gap:6px}
+.dots a{width:7px;height:7px;border-radius:50%;background:var(--rule);display:block}
+.dots a[aria-current="true"]{background:var(--amber)}
+
+@media (max-width:820px){
+  .slide{grid-template-columns:56px minmax(0,1fr)}
+  .gutter{padding:40px 0 24px}
+  .gutter .num{font-size:22px}
+  .body{padding:38px 22px 44px;gap:20px;justify-content:flex-start}
+  .cols{grid-template-columns:1fr}
+  .fig{padding-right:24px;margin-right:24px}
+  .slide{min-height:auto;padding-bottom:20px}
+  .deck{scroll-snap-type:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html,.deck{scroll-behavior:auto}
+}
+</style>
+
+<div class="deck" id="deck">
+
+  <!-- ── 一 ─────────────────────────────────────────────── -->
+  <section class="slide" id="s1" aria-labelledby="t1">
+    <div class="spectrum" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="gutter"><span class="num">1</span><span class="tag">WHY</span></div>
+    <div class="body">
+      <p class="eyebrow">技能庫 · 製作紀錄</p>
+      <h1 id="t1">四十個技能散在三個地方，<br>沒有一個地方看得到全貌</h1>
+      <p class="lede">
+        技能分別存放在範例、內建、自建三個目錄。哪些存在、哪些已啟用、各自負責什麼，
+        只能逐一開 <code>SKILL.md</code> 才知道。
+      </p>
+
+      <div class="cols">
+        <div class="block">
+          <h3>起點</h3>
+          <ul>
+            <li>先前用對話做出一份清單頁，版面是對的，<b>但資料是寫死的靜態快照</b>。</li>
+            <li>它從來沒有真的跑起來過——三個功能表面上有、實際上壞的。</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>三個實際的缺陷</h3>
+          <div class="faults">
+            <div class="fault">
+              <div class="what"><code>window.storage</code> 這個 API 不存在</div>
+              <div class="why">錯誤被 try/catch 吞掉，拖曳排序從來沒被存下來過</div>
+            </div>
+            <div class="fault">
+              <div class="what">主題只處理了兩種狀態</div>
+              <div class="why">系統設淺色、又沒手動切換過的人，會看到深色配色配淺底</div>
+            </div>
+            <div class="fault">
+              <div class="what">統計數字寫死在頁面裡</div>
+              <div class="why">標示「14 個分類」，實際只有 10 個；啟用數也少算了 4 個</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="figures">
+        <div class="fig"><div class="v">40</div><div class="k">技能</div></div>
+        <div class="fig"><div class="v">3</div><div class="k">存放位置</div></div>
+        <div class="fig"><div class="v">10</div><div class="k">分類</div></div>
+        <div class="fig"><div class="v">345</div><div class="k">附加參考文件</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 二 ─────────────────────────────────────────────── -->
+  <section class="slide" id="s2" aria-labelledby="t2">
+    <div class="spectrum" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="gutter"><span class="num">2</span><span class="tag">HOW</span></div>
+    <div class="body">
+      <p class="eyebrow">關鍵限制決定了架構</p>
+      <h1 id="t2">發佈後的頁面，<em>讀不到你的硬碟</em></h1>
+      <p class="lede">
+        Artifact 跑在沙箱 iframe 裡，沒有檔案系統權限，連線也只放行字型。
+        頁面永遠無法自己去掃描目錄——所以掃描與呈現必須拆開。
+      </p>
+
+      <div class="flow">
+        <div class="sources">
+          <div class="src">examples/ <span>範例 27</span></div>
+          <div class="src">public/ <span>內建 8</span></div>
+          <div class="src">synced/ <span>自建 5</span></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step">
+          <div class="t">scan-skills.py</div>
+          <div class="d">讀 frontmatter 與 manifest，中文名與分類依名稱沿用</div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step">
+          <div class="t">skills.json</div>
+          <div class="d">清單快照，帶掃描時間戳</div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step here">
+          <div class="t">儀表板</div>
+          <div class="d">每次開啟都重讀，取較新的一份</div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="block">
+          <h3>自動化</h3>
+          <ul>
+            <li>每天台北時間 <b>09:00</b> 開一個 session 重掃。</li>
+            <li>內容相同就直接結束，<b>不發佈</b>，避免灌版本。</li>
+            <li>有變動才改寫清單、重新發佈，並推播通知。</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>驗證</h3>
+          <ul>
+            <li><b>61 項</b>瀏覽器自動化斷言，涵蓋主題、篩選、匯入、資料檔優先順序。</li>
+            <li>排程<b>實際觸發 4 次</b>才敢交付——第 2 次卡死在權限詢問上。</li>
+            <li>那個錯只有真的跑過才會現形：預設分支沒有腳本目錄。</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="note">
+        <b>比對基準刻意用線上頁面，而不是程式庫裡的檔案。</b>
+        排程 session 不見得能推送；若拿程式庫當基準，基準永遠不會前進，
+        同一個變動會每天被重新發佈一次。
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 三 ─────────────────────────────────────────────── -->
+  <section class="slide" id="s3" aria-labelledby="t3">
+    <div class="spectrum" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="gutter"><span class="num">3</span><span class="tag">RESULT</span></div>
+    <div class="body">
+      <p class="eyebrow">成果</p>
+      <h1 id="t3">打開就是完整清單，<br>而且會自己跟上</h1>
+
+      <div class="cols">
+        <div class="block">
+          <h3>找得到</h3>
+          <ul>
+            <li>全文搜尋名稱、用途與說明檔，命中處高亮。</li>
+            <li>依分類、來源、只看已啟用篩選。</li>
+            <li>三種排序、卡片與清單兩種檢視。</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>看得懂</h3>
+          <ul>
+            <li>詳細面板列出說明檔全文、檔案樹與實際路徑。</li>
+            <li>啟用狀態、來源、待補中文名都在卡片上一眼可見。</li>
+            <li>分類與卡片順序可拖曳調整，會自動記住。</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>跟得上</h3>
+          <ul>
+            <li>每日自動重掃，新增與刪除都會反映。</li>
+            <li>等不及可用「更新清單」立刻手動匯入。</li>
+            <li>清單來源與掃描時間標示在頁面上，不必猜。</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>現況</h3>
+          <div class="figures" style="border-top:none;padding-top:0">
+            <div class="fig"><div class="v">40</div><div class="k">技能</div></div>
+            <div class="fig"><div class="v">12</div><div class="k">已啟用</div></div>
+            <div class="fig"><div class="v">10</div><div class="k">分類</div></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="note">
+        <b>唯一的限制：更新延遲最多 24 小時。</b>
+        剛新增的技能不會立刻出現——沙箱裡的頁面碰不到檔案系統，
+        中間那一次掃描拿不掉。要立刻反映就手動匯入一次。
+      </p>
+
+      <a class="cta" href="https://claude.ai/code/artifact/042d69b9-f337-47cd-bb90-a9119fdb2de9">開啟技能庫 →</a>
+    </div>
+  </section>
+
+</div>
+
+<nav class="pager" aria-label="投影片">
+  <span id="pageNum">1 / 3</span>
+  <span class="dots">
+    <a href="#s1" aria-label="第一張" aria-current="true"></a>
+    <a href="#s2" aria-label="第二張" aria-current="false"></a>
+    <a href="#s3" aria-label="第三張" aria-current="false"></a>
+  </span>
+</nav>
+
+<script>
+(() => {
+  "use strict";
+  const deck  = document.getElementById("deck");
+  const slides = [...document.querySelectorAll(".slide")];
+  const dots  = [...document.querySelectorAll(".dots a")];
+  const label = document.getElementById("pageNum");
+  let at = 0;
+
+  const show = i => {
+    at = Math.max(0, Math.min(slides.length - 1, i));
+    label.textContent = (at + 1) + " / " + slides.length;
+    dots.forEach((d, n) => d.setAttribute("aria-current", String(n === at)));
+  };
+
+  // 以捲動位置決定目前頁，比監聽點擊可靠：鍵盤、滾輪、拖曳捲軸都算數
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) show(slides.indexOf(e.target)); });
+  }, { root: deck, threshold: 0.55 });
+  slides.forEach(s => io.observe(s));
+
+  const go = i => slides[Math.max(0, Math.min(slides.length - 1, i))]
+    .scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+
+  addEventListener("keydown", e => {
+    if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(at + 1); }
+    if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key))          { e.preventDefault(); go(at - 1); }
+    if (e.key === "Home") { e.preventDefault(); go(0); }
+    if (e.key === "End")  { e.preventDefault(); go(slides.length - 1); }
+  });
+  show(0);
+})();
+</script>
