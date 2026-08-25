@@ -2,14 +2,19 @@
 """重掃 skill 目錄，只在內容真的變了才改寫儀表板頁面。
 
 給排程用：
-    python3 artifacts/update-dashboard.py
+    python3 artifacts/update-dashboard.py --baseline <已發佈頁面的下載檔>
     退出碼 0 = 有變動，已改寫 skill-index.html，需要重新發佈
     退出碼 2 = 沒有變動，什麼都別做
     退出碼 1 = 出錯
 變動摘要會印到 stdout，可直接放進發佈的 label。
+
+--baseline 要指向「目前線上那一版」的 HTML。排程執行的 session 不見得能 git push
+（推送可能需要人工批准，而排程時沒有人在），所以不能拿 repo 裡的檔案當基準：推不上去
+的話基準永遠不會前進，同一個變動會每小時被重新發佈一次。線上頁面是排程唯一能可靠寫入
+的狀態，因此以它為準。省略時退回用 repo 裡的檔案，適合手動執行。
 """
 from __future__ import annotations
-import json, re, subprocess, sys
+import argparse, json, re, subprocess, sys
 from pathlib import Path
 
 HERE  = Path(__file__).resolve().parent
@@ -23,7 +28,18 @@ def key(skills: list[dict]) -> dict:
     return {s["name"]: {k: v for k, v in sorted(s.items()) if k not in IGNORE} for s in skills}
 
 
+def seed_of(path: Path) -> dict:
+    m = BLOB.search(path.read_text(encoding="utf-8"))
+    if not m:
+        raise ValueError(f"{path} 裡找不到 skill-data 區塊")
+    return json.loads(m.group(2))
+
+
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--baseline", help="拿來比對的已發佈頁面 HTML；省略則用 repo 內的檔案")
+    args = ap.parse_args()
+
     if not PAGE.is_file():
         print(f"找不到 {PAGE}", file=sys.stderr)
         return 1
@@ -32,7 +48,11 @@ def main() -> int:
     if not m:
         print("頁面裡找不到 skill-data 區塊", file=sys.stderr)
         return 1
-    current = json.loads(m.group(2))
+    try:
+        current = seed_of(Path(args.baseline)) if args.baseline else json.loads(m.group(2))
+    except (OSError, ValueError) as e:
+        print(f"讀不到比對基準：{e}", file=sys.stderr)
+        return 1
 
     scan = subprocess.run([sys.executable, str(HERE / "scan-skills.py")],
                           capture_output=True, text=True)
