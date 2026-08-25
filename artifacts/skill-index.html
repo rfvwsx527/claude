@@ -42,7 +42,7 @@
 
 *{box-sizing:border-box}
 body{
-  margin:0;background:var(--bg);color:var(--tx);
+  margin:0;background:var(--bg);color:var(--tx);color-scheme:dark;
   font-family:var(--body);font-size:14px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
@@ -50,6 +50,8 @@ button,input{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:none;padding:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 ::selection{background:var(--accent-soft);color:var(--tx)}
+
+:root[data-skin="light"] body{color-scheme:light}
 
 .wrap{max-width:1320px;margin:0 auto;padding:0 24px 72px}
 
@@ -468,7 +470,9 @@ const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">"
 const escRe = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /* ── state ─────────────────────────────────────────────────── */
-const PREF_KEY  = "skill-index/prefs-dark-default";
+const PREF_KEY  = "skill-index/view-prefs";   // 只存檢視與排序
+const SKIN_KEY  = "skill-index/skin";         // 只由切換鈕寫入
+const DEAD_KEYS = ["skill-index/prefs", "skill-index/prefs-dark-default"];
 const SHARED_KEY = "skill-index/shared";
 const STATE_FILE = "data/index-state.json";
 
@@ -507,22 +511,21 @@ function writeLocal(){ try { localStorage.setItem(SHARED_KEY, JSON.stringify(pay
 
 function readPrefs(){
   try {
-    localStorage.removeItem("skill-index/prefs");   // 預設翻轉前的舊偏好
+    // 舊鍵曾把檢視器蓋上的佈景當成使用者的選擇存起來，一律丟棄。
+    DEAD_KEYS.forEach(k => localStorage.removeItem(k));
+    const skin = localStorage.getItem(SKIN_KEY);
+    if (skin === "dark" || skin === "light") document.documentElement.setAttribute("data-skin", skin);
     const p = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
     if (!p) return;
     if (["grid","list"].includes(p.view)) state.view = p.view;
     if (["cat","updated","name"].includes(p.sort)) state.sort = p.sort;
-    if (p.theme === "dark" || p.theme === "light") document.documentElement.setAttribute("data-skin", p.theme);
   } catch {}
 }
 function writePrefs(){
-  try {
-    localStorage.setItem(PREF_KEY, JSON.stringify({
-      view: state.view, sort: state.sort,
-      theme: document.documentElement.getAttribute("data-skin") || "",
-    }));
-  } catch {}
+  try { localStorage.setItem(PREF_KEY, JSON.stringify({ view: state.view, sort: state.sort })); } catch {}
 }
+// 只有這裡會寫入主題，值只可能來自使用者按下的那一下。
+function writeSkin(skin){ try { localStorage.setItem(SKIN_KEY, skin); } catch {} }
 
 async function loadShared(){
   const local = readLocal();
@@ -850,8 +853,9 @@ el("#resetOrder").onclick = () => {
 };
 
 el("#themeBtn").onclick = () => {
-  document.documentElement.setAttribute("data-skin", isDark() ? "light" : "dark");
-  writePrefs();
+  const next = isDark() ? "light" : "dark";
+  document.documentElement.setAttribute("data-skin", next);
+  writeSkin(next);
   themeLabel();
 };
 
