@@ -464,7 +464,7 @@ const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">"
 const escRe = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /* ── state ─────────────────────────────────────────────────── */
-const PREF_KEY  = "skill-index/prefs";
+const PREF_KEY  = "skill-index/prefs-dark-default";
 const SHARED_KEY = "skill-index/shared";
 const STATE_FILE = "data/index-state.json";
 
@@ -503,6 +503,7 @@ function writeLocal(){ try { localStorage.setItem(SHARED_KEY, JSON.stringify(pay
 
 function readPrefs(){
   try {
+    localStorage.removeItem("skill-index/prefs");   // 預設翻轉前的舊偏好
     const p = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
     if (!p) return;
     if (["grid","list"].includes(p.view)) state.view = p.view;
