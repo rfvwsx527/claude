@@ -7,15 +7,15 @@
 <style>
 /* ── tokens · 深色為預設，淺色需手動切換 ───────────────────── */
 :root{
-  --bg:#11161A; --panel:#191F24; --panel-hi:#1F272C; --sunk:#0D1215;
-  --line:#2B353B; --hair:#222B31;
-  --tx:#E3E9E6; --tx2:#98A5A1; --tx3:#6C7A77;
-  --accent:#54BE9C; --on-accent:#0B1512; --accent-soft:#1B2E29;
-  --wordmark:#D9A75E;
-  --mark:#5E5220; --mark-tx:#F6E9BE;
-  --c-doc:#D6A55C; --c-shop:#DE8A5F; --c-design:#E06E97; --c-life:#B983D8;
-  --c-dev:#9791EE; --c-admin:#5CA6DA; --c-intel:#3DB3AD; --c-fin:#5BBA7F;
-  --c-write:#AEB25A; --c-ops:#98A4AB;
+  --bg:#12151B; --panel:#1F242D; --panel-hi:#252B36; --sunk:#171B23;
+  --line:#2C333F; --hair:#232935;
+  --tx:#FFFFFF; --tx2:#B0B8C4; --tx3:#79828F;
+  --accent:#E2A03F; --on-accent:#1A1405; --accent-soft:rgba(226,160,63,.18);
+  --wordmark:#E2A03F;
+  --mark:rgba(226,160,63,.32); --mark-tx:#FFFFFF;
+  --c-doc:#E2A03F; --c-shop:#EF7D57; --c-design:#F0698E; --c-life:#E86A9B;
+  --c-dev:#9B7BE0; --c-admin:#4EA1D3; --c-intel:#4EC5C1; --c-fin:#57B894;
+  --c-write:#D9C24E; --c-ops:#7C8AA0;
   --shadow:0 22px 48px -28px rgba(0,0,0,.82);
   color-scheme:dark;
   --display:"Bricolage Grotesque","Noto Sans TC","PingFang TC",sans-serif;
@@ -60,6 +60,19 @@ button{cursor:pointer;background:none;border:none;padding:0}
   color:var(--tx3);text-transform:uppercase;margin-bottom:9px;
 }
 .scanline code{color:var(--tx2)}
+.scanline .stamp{
+  margin-left:auto;display:flex;align-items:center;gap:7px;
+  color:var(--wordmark);white-space:nowrap;
+}
+.scanline .pulse{
+  width:6px;height:6px;border-radius:50%;background:currentColor;flex:none;
+  box-shadow:0 0 0 0 rgba(226,160,63,.55);animation:pulse 2.6s ease-out infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(226,160,63,.5)}
+  70%{box-shadow:0 0 0 6px rgba(226,160,63,0)}
+  100%{box-shadow:0 0 0 0 rgba(226,160,63,0)}
+}
 .mast-actions{margin-left:auto;display:flex;align-items:center;gap:8px;padding-bottom:3px}
 .btn{
   border:1px solid var(--line);border-radius:5px;padding:6px 11px;
@@ -321,11 +334,8 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     <div class="cell"><div class="v" id="st-files">—</div><div class="k">附加參考文件</div></div>
   </section>
   <div class="scanline">
-    <span>掃描自 <code>/mnt/skills</code></span>
-    <span aria-hidden="true">·</span>
-    <span id="scanNote"></span>
-    <span aria-hidden="true">·</span>
-    <span>「自建」與「已啟用」的項目會列在 Skills 設定頁，其餘為環境內建</span>
+    <span>掃描自 <code>/mnt/skills</code> — 設定頁只會列出你新增的和已加入的範例，其餘為環境內建</span>
+    <span class="stamp"><i class="pulse" aria-hidden="true"></i><span id="stamp"></span></span>
   </div>
 
   <div class="toolbar">
@@ -593,9 +603,14 @@ function renderLedger(){
   });
   el("#onlyOn").textContent = "只看已啟用 " + SKILLS.filter(s => s.enabled).length;
 
-  const last = SKILLS.map(s => s.updated0).sort().pop();
-  el("#scanNote").textContent = "最後一次掃描 " + last + " · 共 " + SKILLS.length + " 個 SKILL.md";
 }
+
+function stamp(){
+  const d = new Date(), pad = n => String(n).padStart(2, "0");
+  el("#stamp").textContent = "資料產生於 " + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" +
+    pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+setInterval(stamp, 60000);
 
 /* ── rail ──────────────────────────────────────────────────── */
 function renderTabs(){
@@ -813,7 +828,7 @@ function syncSegs(){
 const isDark = () => document.documentElement.getAttribute("data-theme") !== "light";
 function themeLabel(){ el("#themeBtn").textContent = isDark() ? "淺色" : "深色"; }
 
-function render(){ renderLedger(); syncSegs(); renderTabs(); renderResults(); themeLabel(); }
+function render(){ renderLedger(); stamp(); syncSegs(); renderTabs(); renderResults(); themeLabel(); }
 
 el("#q").addEventListener("input", e => { state.q = e.target.value; renderResults(); });
 document.querySelectorAll("[data-origin]").forEach(b => b.onclick = () => { state.origin = b.dataset.origin; syncSegs(); renderResults(); });
