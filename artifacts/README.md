@@ -40,3 +40,18 @@ frontmatter 的 `description`。中文名 `zh`、分類 `cat`、一句話用途 
 - `/mnt/skills/public/` → `builtin`
 - `~/.claude/skills/synced/` + `manifest.json` → `mine`（`source: custom`），
   `manifest.json` 同時決定 `enabled` 與 `updatedAt`
+
+## 每小時自動更新
+
+排程會開一個新 session 執行：
+
+```sh
+python3 artifacts/update-dashboard.py
+```
+
+- 退出碼 **2** = 沒有變動，直接結束，不發佈也不 commit（避免每小時灌版本）。
+- 退出碼 **0** = 已把新清單寫進 `skill-index.html` 的內建快照，接著重新發佈與 commit。
+
+session 只能發佈 HTML、寫不了 `data/skills.json`，所以排程更新的是**內建快照**；
+手動匯入更新的是**資料檔**。兩條路徑都會帶 `scannedAt`，頁面開啟時**取較新的那份**，
+否則舊資料檔會永遠蓋掉排程的結果。

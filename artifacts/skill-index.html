@@ -440,7 +440,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
 
 <script id="skill-data" type="application/json">
 {
- "scannedAt": "2026-08-25 12:57",
+ "scannedAt": "2026-08-25 13:24",
  "cats": [
   {
    "id": "doc",
@@ -1258,12 +1258,17 @@ function applyCatalog(doc, from){
   catalogFrom = from;
 }
 
+// 兩條更新路徑：排程重發整頁會更新內建快照，手動匯入會寫資料檔。
+// 誰的 scannedAt 比較新就用誰，否則其中一條會永遠蓋掉另一條。
 async function loadCatalog(){
   try {
     const r = await fetch(CATALOG_FILE, { cache: "no-store" });
     if (!r.ok) return;
     const d = await r.json();
-    if (validCatalog(d)) applyCatalog(d, "file");
+    if (!validCatalog(d)) return;
+    const fileAt = typeof d.scannedAt === "string" ? d.scannedAt : "";
+    const seedAt = typeof SEED.scannedAt === "string" ? SEED.scannedAt : "";
+    if (fileAt >= seedAt) applyCatalog(d, "file");
   } catch {}
 }
 
@@ -1630,8 +1635,8 @@ function closeDrawer(){
 /* ── 更新清單 ──────────────────────────────────────── */
 function catalogNote(){
   const n = el("#catalogNote");
-  if (catalogFrom === "file") n.textContent = catalogAt ? "清單掃描於 " + catalogAt : "清單來自資料檔";
-  else n.textContent = "清單為內建快照";
+  if (catalogAt) n.textContent = "清單掃描於 " + catalogAt;
+  else n.textContent = catalogFrom === "file" ? "清單來自資料檔" : "清單為內建快照";
 }
 
 function openSheet(){

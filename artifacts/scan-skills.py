@@ -87,16 +87,25 @@ def scan() -> list[dict]:
     found: dict[str, dict] = {}
 
     dirs: list[tuple[Path, str]] = []
+    seen: set[str] = set()
     for root, src in ROOTS:
         if root.is_dir():
-            dirs += [(d, src) for d in sorted(root.iterdir())
-                     if d.is_dir() and (d / "SKILL.md").is_file()]
-    # 自建 skill 只存在於同步目錄
-    for name, entry in manifest.items():
-        if SRC_OF_SOURCE.get(entry.get("source")) == "mine":
-            d = SYNCED / name
-            if (d / "SKILL.md").is_file():
-                dirs.append((d, "mine"))
+            for d in sorted(root.iterdir()):
+                if d.is_dir() and (d / "SKILL.md").is_file():
+                    dirs.append((d, src))
+                    seen.add(d.name)
+    # 同步目錄整個掃過，不倚賴 manifest 有沒有登記：
+    # 直接放進目錄的 skill 也要看得見。與 /mnt 同名的視為同一個，不重複列。
+    synced_names: set[str] = set()
+    if SYNCED.is_dir():
+        for d in sorted(SYNCED.iterdir()):
+            if not (d.is_dir() and (d / "SKILL.md").is_file()):
+                continue
+            synced_names.add(d.name)
+            if d.name in seen:
+                continue
+            entry = manifest.get(d.name)
+            dirs.append((d, SRC_OF_SOURCE.get(entry.get("source")) if entry else "mine"))
 
     for d, src in dirs:
         name = d.name
@@ -111,7 +120,7 @@ def scan() -> list[dict]:
             "name": fm.get("name") or name,
             "cat": DEFAULT_CAT,
             "src": src,
-            "enabled": name in manifest,
+            "enabled": name in manifest or name in synced_names,
             "size": human_size(total),
             "updated": updated,
             "nfiles": len(files),
