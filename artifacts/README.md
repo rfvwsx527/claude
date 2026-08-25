@@ -41,9 +41,10 @@ frontmatter 的 `description`。中文名 `zh`、分類 `cat`、一句話用途 
 - `~/.claude/skills/synced/` + `manifest.json` → `mine`（`source: custom`），
   `manifest.json` 同時決定 `enabled` 與 `updatedAt`
 
-## 每小時自動更新
+## 每日自動更新
 
-Routine `技能庫儀表板每小時重掃`（trig_0174Dt3YMXeN9GNZVJdSZ9J9，每小時第 27 分）會開一個
+Routine `技能庫儀表板每日重掃（台北 09:00）`（trig_0174Dt3YMXeN9GNZVJdSZ9J9，
+cron `0 1 * * *`＝台北時間每天 09:00）會開一個
 新 session，流程是：切到本分支 → 用 Artifact `action: read` 把**目前線上那一版**存成本機
 檔 → `python3 artifacts/update-dashboard.py --baseline <那個檔>` → 退出碼 0 才重新發佈。
 
@@ -54,7 +55,7 @@ Routine `技能庫儀表板每小時重掃`（trig_0174Dt3YMXeN9GNZVJdSZ9J9，�
    所以指令裡明確要求先 checkout 本分支，並禁止掃描磁碟。
 2. **排程 session 不見得能 git push**。所以 git 完全移出流程。
 3. **因此比對基準不能用 repo 裡的檔案**。推不上去的話基準永遠停在舊版，同一個變動會
-   每小時被重新發佈一次。改用線上頁面當基準——那是排程唯一能可靠寫入的狀態。
+   每次執行都被重新發佈一次。改用線上頁面當基準——那是排程唯一能可靠寫入的狀態。
 
 驗證紀錄（四次手動觸發）：
 
