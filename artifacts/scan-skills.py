@@ -42,7 +42,18 @@ def frontmatter(skill_md: Path) -> dict:
             out[key] = val
         elif key and line.startswith((" ", "\t")):        # 折行的續行
             out[key] = (out[key] + " " + line.strip()).strip()
-    return out
+    return {k: unquote(v) for k, v in out.items()}
+
+
+def unquote(v: str) -> str:
+    """剝掉 YAML 純量兩側的成對引號。不剝的話 `name: "11"` 會變成名稱含引號。"""
+    v = v.strip()
+    if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
+        inner = v[1:-1]
+        if v[0] == '"':
+            inner = inner.replace('\\"', '"').replace("\\\\", "\\")
+        return inner
+    return v
 
 
 def human_size(n: int) -> str:
@@ -105,7 +116,7 @@ def scan() -> list[dict]:
             if d.name in seen:
                 continue
             entry = manifest.get(d.name)
-            dirs.append((d, SRC_OF_SOURCE.get(entry.get("source")) if entry else "mine"))
+            dirs.append((d, SRC_OF_SOURCE.get(entry.get("source"), "mine") if entry else "mine"))
 
     for d, src in dirs:
         name = d.name

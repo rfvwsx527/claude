@@ -515,7 +515,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
 
 <script id="skill-data" type="application/json">
 {
- "scannedAt": "2026-08-25 13:43",
+ "scannedAt": "2026-08-27 01:02",
  "cats": [
   {
    "id": "doc",
@@ -560,12 +560,46 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
  ],
  "skills": [
   {
+   "name": "11",
+   "cat": "ops",
+   "src": "mine",
+   "enabled": true,
+   "size": "0.0 KB",
+   "updated": "2026-08-26",
+   "nfiles": 1,
+   "files": [
+    "SKILL.md"
+   ],
+   "path": "/root/.claude/skills/synced/11/",
+   "raw": "11",
+   "zh": "11",
+   "desc": "11",
+   "needsCuration": true
+  },
+  {
+   "name": "22",
+   "cat": "ops",
+   "src": "mine",
+   "enabled": true,
+   "size": "0.0 KB",
+   "updated": "2026-08-26",
+   "nfiles": 1,
+   "files": [
+    "SKILL.md"
+   ],
+   "path": "/root/.claude/skills/synced/22/",
+   "raw": "22",
+   "zh": "22",
+   "desc": "22",
+   "needsCuration": true
+  },
+  {
    "name": "algorithmic-art",
    "cat": "design",
    "src": "example",
    "enabled": false,
    "size": "59.6 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 4,
    "files": [
     "LICENSE.txt",
@@ -584,14 +618,14 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "17.2 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
     "SKILL.md"
    ],
    "path": "/mnt/skills/examples/benepass-reimbursement/",
-   "raw": "\"Submit expense reimbursements through Benepass (app.getbenepass.com). For users whose employer uses Benepass as their benefits platform. Handles login, benefit selection, form filling, receipt upload, and submission. Requires browser/computer-use capabilities.\"",
+   "raw": "Submit expense reimbursements through Benepass (app.getbenepass.com). For users whose employer uses Benepass as their benefits platform. Handles login, benefit selection, form filling, receipt upload, and submission. Requires browser/computer-use capabilities.",
    "zh": "Benepass 請款",
    "desc": "透過 Benepass 平台送出費用核銷，適用公司用這套系統的人。"
   },
@@ -601,7 +635,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "13.3 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -618,7 +652,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "15.1 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -635,7 +669,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "16.7 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -652,7 +686,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "5.3 MB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 83,
    "files": [
     "LICENSE.txt",
@@ -668,12 +702,30 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "desc": "依設計原則做出可直接使用的 .png 與 .pdf 視覺作品。"
   },
   {
+   "name": "deep-research",
+   "cat": "intel",
+   "src": "example",
+   "enabled": false,
+   "size": "19.0 KB",
+   "updated": "2026-08-26",
+   "nfiles": 3,
+   "files": [
+    "SKILL.md",
+    "references/report-writer.md",
+    "references/researcher.md"
+   ],
+   "path": "/mnt/skills/examples/deep-research/",
+   "raw": "Use this skill when the user's prompt requires (1) researching a topic across multiple sources, comparing options or alternatives, analyzing trends or history, understanding markets or industries, or reviewing literature or studies and (2) synthesizing that research into a comprehensive, narrative report. If you're planning to search the web or internal knowledge bases, consider using this skill. This skill coordinates research subagents, so use it only when you have a tool for spawning subagents (the Agent or Task tool); otherwise, research the question directly.",
+   "zh": "深度研究報告",
+   "desc": "跨多個來源研究一個主題，再整合成有敘事的完整報告。"
+  },
+  {
    "name": "doc-coauthoring",
    "cat": "doc",
    "src": "example",
    "enabled": false,
    "size": "15.4 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 1,
    "files": [
     "SKILL.md"
@@ -700,7 +752,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "scripts/merge_runs.py"
    ],
    "path": "/mnt/skills/public/docx/",
-   "raw": "\"Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templates (.dotx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', '.dotx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx or .dotx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.\"",
+   "raw": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templates (.dotx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', '.dotx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx or .dotx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
    "zh": "Word 文件生成",
    "desc": "建立、讀取與修改 Word 檔，支援目錄、頁碼、表格、追蹤修訂與註解。"
   },
@@ -710,7 +762,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "15.7 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -727,7 +779,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "14.4 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -744,7 +796,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "14.5 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -761,14 +813,14 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "builtin",
    "enabled": false,
    "size": "14.5 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
     "SKILL.md"
    ],
    "path": "/mnt/skills/public/file-reading/",
-   "raw": "\"Use this skill when a file has been uploaded but its content is NOT in your context — only its path at /mnt/user-data/uploads/ is listed in an uploaded_files block. This skill is a router: it tells you which tool to use for each file type (pdf, docx, xlsx, csv, json, images, archives, ebooks) so you read the right amount the right way instead of blindly running cat on a binary. Triggers: any mention of /mnt/user-data/uploads/, an uploaded_files section, a file_path tag, or a user asking about an uploaded file you have not yet read. Do NOT use this skill if the file content is already visible in your context inside a documents block — you already have it.\"",
+   "raw": "Use this skill when a file has been uploaded but its content is NOT in your context — only its path at /mnt/user-data/uploads/ is listed in an uploaded_files block. This skill is a router: it tells you which tool to use for each file type (pdf, docx, xlsx, csv, json, images, archives, ebooks) so you read the right amount the right way instead of blindly running cat on a binary. Triggers: any mention of /mnt/user-data/uploads/, an uploaded_files section, a file_path tag, or a user asking about an uploaded file you have not yet read. Do NOT use this skill if the file content is already visible in your context inside a documents block — you already have it.",
    "zh": "上傳檔案讀取",
    "desc": "上傳檔案的內容不在對話裡時，判斷該用哪種方式讀取哪種格式。"
   },
@@ -778,7 +830,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "15.3 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -795,7 +847,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "builtin",
    "enabled": false,
    "size": "18.1 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -812,7 +864,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "14.0 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -829,7 +881,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "14.8 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -846,7 +898,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": true,
    "size": "10.4 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 1,
    "files": [
     "SKILL.md"
@@ -868,7 +920,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "SKILL.md"
    ],
    "path": "/root/.claude/skills/synced/intelligence-agent-core/",
-   "raw": "\"當需要根據公開資訊來源，產出週期性情報報告、摘要、Google Drive 研究文件、Gmail 草稿或社群貼文時，請使用此 Skill。\"",
+   "raw": "當需要根據公開資訊來源，產出週期性情報報告、摘要、Google Drive 研究文件、Gmail 草稿或社群貼文時，請使用此 Skill。",
    "zh": "情報總管核心",
    "desc": "依公開資訊來源產出週期性情報報告，可輸出成 Google Drive 研究文件、Gmail 草稿或社群貼文。"
   },
@@ -878,7 +930,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "21.9 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 6,
    "files": [
     "LICENSE.txt",
@@ -899,7 +951,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "24.2 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -916,7 +968,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "118.9 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 10,
    "files": [
     "LICENSE.txt",
@@ -937,7 +989,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "13.9 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -954,7 +1006,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": true,
    "size": "39.8 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 3,
    "files": [
     "SKILL.md",
@@ -962,7 +1014,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "assets/fonts/Fraunces-OFL.txt"
    ],
    "path": "/mnt/skills/examples/morning/",
-   "raw": "\"Render the user's morning brief as a styled HTML artifact, or set it up as a recurring weekday task. Use only when the user explicitly asks to run, see, or set up their morning brief, or if they invoke /morning by name. A question about their day, schedule, or calendar is not by itself a request for the brief; answer it directly instead.\"",
+   "raw": "Render the user's morning brief as a styled HTML artifact, or set it up as a recurring weekday task. Use only when the user explicitly asks to run, see, or set up their morning brief, or if they invoke /morning by name. A question about their day, schedule, or calendar is not by itself a request for the brief; answer it directly instead.",
    "zh": "晨間簡報",
    "desc": "把每日行程與待辦整理成有排版的 HTML 簡報，也能設成平日自動執行。"
   },
@@ -989,7 +1041,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "107.8 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 7,
    "files": [
     "LICENSE.txt",
@@ -1031,7 +1083,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "builtin",
    "enabled": false,
    "size": "17.9 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 3,
    "files": [
     "LICENSE.txt",
@@ -1039,7 +1091,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "SKILL.md"
    ],
    "path": "/mnt/skills/public/pdf-reading/",
-   "raw": "\"Use this skill when you need to read, inspect, or extract content from PDF files — especially when file content is NOT in your context and you need to read it from disk. Covers content inventory, text extraction, page rasterization for visual inspection, embedded image/attachment/table/form-field extraction, and choosing the right reading strategy for different document types (text-heavy, scanned, slide-decks, forms, data-heavy). Do NOT use this skill for PDF creation, form filling, merging, splitting, watermarking, or encryption — use the pdf skill instead.\"",
+   "raw": "Use this skill when you need to read, inspect, or extract content from PDF files — especially when file content is NOT in your context and you need to read it from disk. Covers content inventory, text extraction, page rasterization for visual inspection, embedded image/attachment/table/form-field extraction, and choosing the right reading strategy for different document types (text-heavy, scanned, slide-decks, forms, data-heavy). Do NOT use this skill for PDF creation, form filling, merging, splitting, watermarking, or encryption — use the pdf skill instead.",
    "zh": "PDF 內容擷取",
    "desc": "讀取與擷取 PDF 內容，含頁面轉圖、內嵌圖片、表格與表單欄位。"
   },
@@ -1049,7 +1101,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "builtin",
    "enabled": true,
    "size": "1.1 MB",
-   "updated": "2026-08-03",
+   "updated": "2026-08-26",
    "nfiles": 56,
    "files": [
     "LICENSE.txt",
@@ -1060,7 +1112,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "scripts/thumbnail.py"
    ],
    "path": "/mnt/skills/public/pptx/",
-   "raw": "\"Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill.\"",
+   "raw": "Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill.",
    "zh": "簡報產生器",
    "desc": "建立與編輯簡報，處理版面、講稿備忘與註解，也能反向抽出全部文字。"
   },
@@ -1070,7 +1122,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "17.2 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -1087,13 +1139,13 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "builtin",
    "enabled": false,
    "size": "2.5 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 1,
    "files": [
     "SKILL.md"
    ],
    "path": "/mnt/skills/public/product-self-knowledge/",
-   "raw": "\"Stop and consult this skill whenever your response would include specific facts about Anthropic's products. Covers: Claude Code (how to install, Node.js requirements, platform/OS support, MCP server integration, configuration), Claude API (function calling/tool use, batch processing, SDK usage, rate limits, pricing, models, streaming), and Claude.ai (Pro vs Team vs Enterprise plans, feature limits). Trigger this even for coding tasks that use the Anthropic SDK, content creation mentioning Claude capabilities or pricing, or LLM provider comparisons. Any time you would otherwise rely on memory for Anthropic product details, verify here instead — your training data may be outdated or wrong.\"",
+   "raw": "Stop and consult this skill whenever your response would include specific facts about Anthropic's products. Covers: Claude Code (how to install, Node.js requirements, platform/OS support, MCP server integration, configuration), Claude API (function calling/tool use, batch processing, SDK usage, rate limits, pricing, models, streaming), and Claude.ai (Pro vs Team vs Enterprise plans, feature limits). Trigger this even for coding tasks that use the Anthropic SDK, content creation mentioning Claude capabilities or pricing, or LLM provider comparisons. Any time you would otherwise rely on memory for Anthropic product details, verify here instead — your training data may be outdated or wrong.",
    "zh": "產品知識查核",
    "desc": "要講到 Anthropic 產品的具體規格、價格或限制時，先來這裡查證而不是憑記憶。"
   },
@@ -1103,7 +1155,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "14.7 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "LICENSE.txt",
@@ -1120,7 +1172,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "65.5 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 2,
    "files": [
     "SKILL.md",
@@ -1137,7 +1189,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": true,
    "size": "221.9 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 18,
    "files": [
     "LICENSE.txt",
@@ -1158,7 +1210,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "42.7 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 7,
    "files": [
     "LICENSE.txt",
@@ -1195,7 +1247,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "140.7 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 13,
    "files": [
     "LICENSE.txt",
@@ -1239,7 +1291,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "SKILL.md"
    ],
    "path": "/root/.claude/skills/synced/tw-stock-news-brief/",
-   "raw": "\"產生台股科技六雄（台積電、聯發科、台達電、鴻海、緯創、臻鼎）的盤後新聞簡報。當使用者要求整理股票新聞、盤後報告、台股日報、個股新聞摘要，或排程任務要求產生每日股市簡報時，務必使用此 skill——即使使用者只提到其中一兩家公司或只說「幫我看昨天股市」也應使用。Generates a daily Taiwan tech-stock news brief (TSMC, MediaTek, Delta, Hon Hai, Wistron, Zhen Ding) with 5 key points per company, price changes, TAIEX index, and a markdown report saved to disk.\"",
+   "raw": "產生台股科技六雄（台積電、聯發科、台達電、鴻海、緯創、臻鼎）的盤後新聞簡報。當使用者要求整理股票新聞、盤後報告、台股日報、個股新聞摘要，或排程任務要求產生每日股市簡報時，務必使用此 skill——即使使用者只提到其中一兩家公司或只說「幫我看昨天股市」也應使用。Generates a daily Taiwan tech-stock news brief (TSMC, MediaTek, Delta, Hon Hai, Wistron, Zhen Ding) with 5 key points per company, price changes, TAIEX index, and a markdown report saved to disk.",
    "zh": "台股六雄盤後簡報",
    "desc": "每天盤後整理台積電、聯發科、台達電、鴻海、緯創、臻鼎的重點新聞，各五則要點加上漲跌與大盤走勢。"
   },
@@ -1249,7 +1301,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
    "src": "example",
    "enabled": false,
    "size": "44.8 KB",
-   "updated": "2026-08-24",
+   "updated": "2026-08-26",
    "nfiles": 5,
    "files": [
     "LICENSE.txt",
@@ -1280,7 +1332,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     "scripts/office/helpers/__init__.py"
    ],
    "path": "/mnt/skills/public/xlsx/",
-   "raw": "\"Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.\"",
+   "raw": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
    "zh": "試算表處理",
    "desc": "建立或修補 Excel 檔：補公式、清資料、加格式與圖表，也能轉換表格格式。"
   }
