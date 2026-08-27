@@ -321,6 +321,33 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.primary:hover{background:var(--accent);color:var(--on-accent);opacity:.9}
 
+/* ── 新增 skill 表單 ─────────────────────────────── */
+.sheet-box.wide{width:min(880px,100%);max-height:min(92vh,760px)}
+.form{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;
+  flex:1;min-height:0;overflow-y:auto;padding-right:6px;  /* 內容超長時捲動表單，別把按鈕擠出視窗 */
+}
+.form label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--tx2)}
+.form label.full{grid-column:1/-1}
+.form .hint{font-size:11px;color:var(--tx3)}
+.form input,.form select,.form textarea{
+  background:var(--sunk);border:1px solid var(--line);border-radius:5px;padding:7px 9px;
+  color:var(--tx);outline:none;font-family:var(--body);font-size:13px;
+}
+.form input,.form textarea{font-family:var(--mono);font-size:12px}
+.form textarea{resize:vertical;line-height:1.6}
+.form input:focus,.form select:focus,.form textarea:focus{border-color:var(--accent)}
+.form .bad{border-color:#F0698E}
+.preview{
+  grid-column:1/-1;background:var(--sunk);border:1px solid var(--hair);border-radius:5px;
+  padding:10px 11px;font-family:var(--mono);font-size:11.5px;line-height:1.65;color:var(--tx2);
+  white-space:pre-wrap;max-height:170px;overflow:auto;
+}
+.preview b{color:var(--tx);font-weight:400}
+.steps{grid-column:1/-1;font-size:12px;color:var(--tx3);line-height:1.7;margin:0}
+.steps b{color:var(--tx2);font-weight:500}
+.chip.draft{border-style:dashed;border-color:var(--c-write);color:var(--c-write)}
+
 /* ── toast ────────────────────────────────────────────────── */
 .toast{
   position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);opacity:0;
@@ -355,6 +382,7 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     </div>
     <div class="mast-actions">
       <span class="sync" id="sync" data-state="idle"><i></i><span id="syncTx">讀取中</span></span>
+      <button class="btn" id="newBtn">新增 skill</button>
       <button class="btn" id="refreshBtn">更新清單</button>
       <button class="btn" id="resetOrder">回復預設排序</button>
       <button class="btn" id="themeBtn" aria-live="polite">深色</button>
@@ -433,6 +461,53 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
     <div class="sheet-act">
       <button class="btn" id="sheetCancel">取消</button>
       <button class="btn primary" id="sheetApply">套用</button>
+    </div>
+  </div>
+</div>
+<div class="sheet" id="newSheet" hidden>
+  <div class="sheet-box wide" role="dialog" aria-modal="true" aria-labelledby="newTitle">
+    <h3 id="newTitle">新增 skill</h3>
+    <p class="sheet-help">
+      這一頁沒有權限把 skill 裝進你的帳號。它會產生一份合規的 <code>SKILL.md</code>，
+      你下載或複製後到 claude.ai 上傳，設定頁就會出現。填的中文名與分類會存成草稿，
+      之後掃描到這個 skill 時自動沿用，不必重打。
+    </p>
+    <div class="form">
+      <label>名稱（英文，會成為資料夾名）
+        <input id="f-name" placeholder="invoice-sorter" spellcheck="false" autocomplete="off">
+        <span class="hint">小寫英文、數字與連字號，2–64 字</span>
+      </label>
+      <label>中文名
+        <input id="f-zh" placeholder="電子發票整理" autocomplete="off">
+        <span class="hint">只用於這個儀表板</span>
+      </label>
+      <label>分類
+        <select id="f-cat"></select>
+      </label>
+      <label>一句話用途
+        <input id="f-desc" placeholder="自動整理電子發票並依月份歸檔。" autocomplete="off">
+        <span class="hint">只用於這個儀表板的卡片</span>
+      </label>
+      <label class="full">觸發說明（寫進 SKILL.md 的 description，Claude 靠它決定何時使用）
+        <textarea id="f-raw" rows="3" spellcheck="false"
+          placeholder="當使用者要求整理電子發票、歸檔發票、或提到「發票對帳」時使用此 skill。"></textarea>
+      </label>
+      <label class="full">內容（SKILL.md 正文，Markdown）
+        <textarea id="f-body" rows="5" spellcheck="false"
+          placeholder="## 步驟&#10;1. …"></textarea>
+      </label>
+      <div class="preview" id="f-preview"></div>
+      <p class="steps">
+        <b>接下來：</b>下載或複製後，到 claude.ai → Settings → Capabilities → Skills → 上傳，
+        設定頁就會看到它。下次掃描時儀表板會自動把草稿換成實際安裝的版本。
+      </p>
+    </div>
+    <div class="sheet-msg" id="newMsg" role="status" aria-live="polite"></div>
+    <div class="sheet-act">
+      <button class="btn" id="newCancel">關閉</button>
+      <button class="btn" id="newCopy">複製內容</button>
+      <button class="btn" id="newDownload">下載 SKILL.md</button>
+      <button class="btn primary" id="newSave">存成草稿</button>
     </div>
   </div>
 </div>
@@ -1220,6 +1295,10 @@ mark{background:var(--mark);color:var(--mark-tx);border-radius:2px;padding:0 1px
 /* ── data ──────────────────────────────────────────────────── */
 const SEED = JSON.parse(document.getElementById("skill-data").textContent);
 const CATALOG_FILE = "data/skills.json";
+// 草稿存成獨立檔案並永遠合併：若混進 skills.json，隔天排程重發內建快照時
+// scannedAt 較新，草稿就會被整份蓋掉。
+const DRAFTS_FILE  = "data/drafts.json";
+let CATALOG_DOC = null, drafts = [];
 
 let CATS = [], SKILLS = [], CMAP = {}, catalogAt = "", catalogFrom = "seed";
 
@@ -1231,6 +1310,7 @@ function validCatalog(d){
 // 掃描器只保證 name/src 等基本欄位，其餘缺漏一律補上安全預設，
 // 免得一筆壞資料讓整頁空白。
 function applyCatalog(doc, from){
+  CATALOG_DOC = doc;
   CATS = (Array.isArray(doc.cats) && doc.cats.length ? doc.cats : SEED.cats)
     .filter(c => c && c.id && c.name);
   const fallback = CATS[CATS.length - 1].id;
@@ -1260,6 +1340,54 @@ function applyCatalog(doc, from){
 
 // 兩條更新路徑：排程重發整頁會更新內建快照，手動匯入會寫資料檔。
 // 誰的 scannedAt 比較新就用誰，否則其中一條會永遠蓋掉另一條。
+// 草稿疊在目錄之上：已經掃描到同名 skill 就不再另外列一張卡，
+// 但把草稿填的中文名與分類套上去，人工欄位不會因為安裝而消失。
+function applyDrafts(){
+  const known = new Map(SKILLS.map(x => [x.name, x]));
+  drafts.forEach(d => {
+    const hit = known.get(d.name);
+    if (hit){
+      if (d.zh)   hit.zh   = d.zh;
+      if (d.cat && CMAP[d.cat]) hit.cat = d.cat;
+      if (d.desc) hit.desc = d.desc;
+      hit.needsCuration = false;
+      return;
+    }
+    SKILLS.push({
+      name: d.name, zh: d.zh || d.name,
+      cat: CMAP[d.cat] ? d.cat : CATS[CATS.length - 1].id,
+      src: "mine", enabled: false, desc: d.desc || "", raw: d.raw || "",
+      size: "—", updated: d.createdAt || "—", updated0: d.createdAt || "—",
+      nfiles: 1, files: ["SKILL.md"], path: "（尚未安裝）",
+      needsCuration: false, draft: true, body: d.body || "",
+    });
+  });
+}
+
+async function loadDrafts(){
+  try {
+    const r = await fetch(DRAFTS_FILE, { cache: "no-store" });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d && Array.isArray(d.drafts)) drafts = d.drafts.filter(x => x && x.name);
+  } catch {}
+}
+
+async function saveDrafts(){
+  const payload = JSON.stringify({ savedAt: Date.now(), drafts });
+  try { localStorage.setItem("skill-index/drafts", payload); } catch {}
+  if (!api) return "local";
+  try { await api.publish({ [DRAFTS_FILE]: payload }); return "saved"; }
+  catch (err) { return (err && err.code) || "error"; }
+}
+
+function rebuild(){
+  if (CATALOG_DOC) applyCatalog(CATALOG_DOC, catalogFrom);
+  applyDrafts();
+  reconcile();
+  render();
+}
+
 async function loadCatalog(){
   try {
     const r = await fetch(CATALOG_FILE, { cache: "no-store" });
@@ -1507,6 +1635,7 @@ function cardEl(s, i, draggable){
   b.innerHTML =
     '<span class="r1"><span class="name">' + hl(s.name) + '</span>' +
       '<span class="chips">' +
+        (s.draft ? '<span class="chip draft">草稿</span>' : "") +
         (s.needsCuration ? '<span class="chip todo">待補</span>' : "") +
         (s.enabled ? '<span class="chip on">已啟用</span>' : "") +
         '<span class="chip' + (s.src === "mine" ? " own" : "") + '">' + ORIGIN_SHORT[s.src] + "</span>" +
@@ -1587,7 +1716,8 @@ function openDrawer(s){
     '<div class="sec"><h4>資訊</h4><dl class="kv">' +
       "<dt>分類</dt><dd>" + esc(cat.name) + (s.needsCuration ? "（掃描預設，待調整）" : "") + "</dd>" +
       "<dt>來源</dt><dd>" + ORIGIN_LABEL[s.src] + "</dd>" +
-      "<dt>狀態</dt><dd>" + (s.enabled ? "已在 Skills 設定頁啟用" : "環境內可用，未啟用") + "</dd>" +
+      "<dt>狀態</dt><dd>" + (s.draft ? "草稿，尚未上傳到 claude.ai"
+        : s.enabled ? "已在 Skills 設定頁啟用" : "環境內可用，未啟用") + "</dd>" +
       "<dt>大小</dt><dd>" + esc(s.size) + "</dd>" +
       '<dt>最後更新</dt><dd><input class="date-edit" type="date" id="dDate" value="' + esc(s.updated) + '"></dd>' +
       "<dt>路徑</dt><dd>" + esc(s.path) + "</dd>" +
@@ -1595,7 +1725,13 @@ function openDrawer(s){
     (overridden
       ? '<p class="note">已手動調整（掃描值為 ' + s.updated0 + '）· <button id="dDateReset">還原</button></p>'
       : '<p class="note">日期可以改成你自己維護的版本時間。</p>') +
-    "</div>";
+    "</div>" +
+    (s.draft
+      ? '<div class="sec"><h4>SKILL.md</h4><p class="raw">' +
+        esc(skillMd({ name: s.name, zh: s.zh, raw: s.raw, desc: s.desc, body: s.body })) + "</p>" +
+        '<p class="note">尚未上傳。到 claude.ai → Settings → Capabilities → Skills 上傳後，' +
+        '下次掃描就會自動換成實際安裝的版本。· <button id="dDropDraft">刪除草稿</button></p></div>'
+      : "");
 
   el("#dDate").addEventListener("change", e => {
     const v = e.target.value;
@@ -1606,6 +1742,8 @@ function openDrawer(s){
     openDrawer(s);
     toast("最後更新已改為 " + s.updated);
   });
+  const dd = el("#dDropDraft");
+  if (dd) dd.onclick = () => deleteDraft(s.name);
   const rst = el("#dDateReset");
   if (rst) rst.onclick = () => {
     delete state.dates[s.name];
@@ -1669,6 +1807,7 @@ async function applyImport(){
 
   const d = diffAgainst(doc);
   applyCatalog(doc, "file");
+  applyDrafts();
   const fresh = reconcile();
   render();
 
@@ -1696,6 +1835,110 @@ async function applyImport(){
     msg.textContent = summary + "\n這個檢視無法寫入資料檔，變更只在這次瀏覽有效。";
   }
   if (pending.length) msg.textContent += "\n待補中文名與分類：" + pending.join("、");
+}
+
+/* ── 新增 skill ─────────────────────────────────── */
+let dl = null;                                    // downloads capability
+
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function yaml(v){                                  // description 一律用雙引號字串，避免冒號等字元破壞 YAML
+  return '"' + String(v).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ") + '"';
+}
+
+function draftForm(){
+  return {
+    name: el("#f-name").value.trim().toLowerCase(),
+    zh:   el("#f-zh").value.trim(),
+    cat:  el("#f-cat").value,
+    desc: el("#f-desc").value.trim(),
+    raw:  el("#f-raw").value.trim(),
+    body: el("#f-body").value.replace(/\s+$/, ""),
+  };
+}
+
+function skillMd(f){
+  const head = ["---", "name: " + (f.name || "your-skill-name"),
+                "description: " + yaml(f.raw || f.desc || ""), "---", ""];
+  const title = "# " + (f.zh || f.name || "Skill");
+  return head.join("\n") + "\n" + title + "\n\n" + (f.body || "") + "\n";
+}
+
+function refreshPreview(){
+  el("#f-preview").textContent = skillMd(draftForm());
+}
+
+function validate(f){
+  const marks = [["#f-name", !SLUG.test(f.name) || f.name.length < 2 || f.name.length > 64]];
+  marks.forEach(([sel, bad]) => el(sel).classList.toggle("bad", bad));
+  if (marks[0][1]) return "名稱只能用小寫英文、數字與連字號，例如 invoice-sorter。";
+  if (SKILLS.some(x => x.name === f.name && !x.draft)) return "已經有一個叫「" + f.name + "」的 skill 了，換個名稱。";
+  if (!f.raw && !f.desc) return "請至少填「觸發說明」，Claude 靠它決定什麼時候用這個 skill。";
+  return null;
+}
+
+function openNew(){
+  const sel = el("#f-cat");
+  sel.innerHTML = CATS.map(c => '<option value="' + c.id + '">' + esc(c.name) + "</option>").join("");
+  el("#newMsg").className = "sheet-msg";
+  el("#newMsg").textContent = "";
+  refreshPreview();
+  el("#newSheet").hidden = false;
+  el("#f-name").focus();
+}
+function closeNew(){ el("#newSheet").hidden = true; el("#newBtn").focus(); }
+
+function say(text, bad){
+  const m = el("#newMsg");
+  m.className = "sheet-msg" + (bad ? " bad" : "");
+  m.textContent = text;
+}
+
+async function doDownload(){
+  const f = draftForm();
+  const err = validate(f);
+  if (err) return say(err, true);
+  if (!dl) return say("這個檢視不能下載檔案，請改用「複製內容」。", true);
+  try {
+    await dl.save({ filename: "SKILL.md", data: skillMd(f) });
+    say("已下載 SKILL.md。接著到 claude.ai → Settings → Capabilities → Skills 上傳。");
+  } catch (e) {
+    const c = e && e.code;
+    say(c === "declined" ? "你取消了下載。" : "下載失敗（" + (c || "unknown") + "），請改用「複製內容」。", true);
+  }
+}
+
+async function doCopy(){
+  const f = draftForm();
+  const err = validate(f);
+  if (err) return say(err, true);
+  const text = skillMd(f);
+  try {
+    await navigator.clipboard.writeText(text);
+    say("已複製 SKILL.md 內容，貼進新檔案存成 SKILL.md 再上傳即可。");
+  } catch {
+    say("瀏覽器擋住了複製。請直接在上方預覽框選取全部文字複製。", true);
+  }
+}
+
+async function doSaveDraft(){
+  const f = draftForm();
+  const err = validate(f);
+  if (err) return say(err, true);
+  drafts = drafts.filter(d => d.name !== f.name);
+  drafts.push(Object.assign({}, f, { createdAt: new Date().toISOString().slice(0, 10) }));
+  say("保存中…");
+  const r = await saveDrafts();
+  rebuild();
+  if (r === "saved")      say("草稿已保存，卡片已加到清單裡（標示「草稿」）。上傳之後掃描到同名 skill 就會自動接上。");
+  else if (r === "local") say("這個檢視無法寫入資料檔，草稿只留在這台裝置。", true);
+  else                    say("草稿已加到清單，但寫入失敗（" + r + "），重新整理後會消失。", true);
+  toast("已新增草稿：" + f.name);
+}
+
+function deleteDraft(name){
+  drafts = drafts.filter(d => d.name !== name);
+  saveDrafts().then(() => { rebuild(); toast("草稿已刪除"); closeDrawer(); });
 }
 
 /* ── chrome ────────────────────────────────────────────────── */
@@ -1741,6 +1984,15 @@ el("#themeBtn").onclick = () => {
   themeLabel();
 };
 
+el("#newBtn").onclick = openNew;
+el("#newCancel").onclick = closeNew;
+el("#newCopy").onclick = doCopy;
+el("#newDownload").onclick = doDownload;
+el("#newSave").onclick = doSaveDraft;
+el("#newSheet").onclick = e => { if (e.target === el("#newSheet")) closeNew(); };
+["#f-name", "#f-zh", "#f-desc", "#f-raw", "#f-body"].forEach(sel =>
+  el(sel).addEventListener("input", refreshPreview));
+
 el("#refreshBtn").onclick = openSheet;
 el("#sheetCancel").onclick = closeSheet;
 el("#sheetApply").onclick = applyImport;
@@ -1749,7 +2001,11 @@ el("#sheet").onclick = e => { if (e.target === el("#sheet")) closeSheet(); };
 el("#dClose").onclick = closeDrawer;
 el("#scrim").onclick = closeDrawer;
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape"){ if (!el("#sheet").hidden) closeSheet(); else closeDrawer(); }
+  if (e.key === "Escape"){
+    if (!el("#newSheet").hidden) closeNew();
+    else if (!el("#sheet").hidden) closeSheet();
+    else closeDrawer();
+  }
   const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
   if (e.key === "/" && !typing){ e.preventDefault(); el("#q").focus(); }
 });
@@ -1759,8 +2015,12 @@ document.addEventListener("keydown", e => {
   readPrefs();
   applyCatalog(SEED, "seed");
   try { api = window.claude ? await window.claude.use("artifact") : null; } catch { api = null; }
+  try { dl = window.claude ? await window.claude.use("downloads") : null; } catch { dl = null; }
+  if (!dl) el("#newDownload").hidden = true;
   // 每次開啟都重新讀資料檔，所以清單更新後不必重發整頁
   await loadCatalog();
+  await loadDrafts();
+  applyDrafts();
   await loadShared();
   render();
   setSync(api ? "synced" : "idle", api ? "已保存" : "只存在這台裝置");

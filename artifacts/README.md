@@ -25,6 +25,22 @@ python3 artifacts/scan-skills.py -o out.json
 2. 列出新增／移除／異動的筆數與名稱；
 3. 寫入 `data/skills.json`（透過 artifact capability 的檔案式發佈）。
 
+## 新增 skill（草稿）
+
+頁面右上「新增 skill」會產生一份合規的 `SKILL.md`，可下載（`downloads` capability）
+或複製。**頁面沒有權限把 skill 裝進帳號**——沙箱沒有檔案系統，CSP 也擋掉所有外連，
+而且沒有任何管理 skill 的連接器。上傳到 claude.ai → Settings → Capabilities → Skills
+這一步必須手動。
+
+草稿存在 **`data/drafts.json`，與 `data/skills.json` 分開，而且永遠合併**：
+草稿若混進目錄檔，隔天排程重發內建快照時 `scannedAt` 較新，草稿會被整份蓋掉。
+
+草稿與目錄的關係由頁面在算繪時決定：
+
+- 目錄裡沒有同名項目 → 以「草稿」卡片列出，不計入啟用數。
+- 目錄裡已有同名項目（代表你上傳了、也掃到了）→ 不另外列卡，改把草稿填的
+  中文名、分類、用途套到該項目上，人工欄位不會因為安裝而消失，也不會被標成「待補」。
+
 ## 人工維護的欄位
 
 掃描能拿到 `name`、`src`、`enabled`、`size`、`nfiles`、`updated`、`path` 與
