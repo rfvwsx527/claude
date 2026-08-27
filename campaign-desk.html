@@ -1,0 +1,1071 @@
+<title>檔期作戰台</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+:root{
+  --ink:#0F1E2E; --soft:#4A5D72; --ground:#E9EDF1; --card:#FFFFFF; --line:#CFD8E1;
+  --wash:#F4F7FA; --grid:#E4EAF0;
+  --ultra:#2743D6; --ultra-hi:#1B32AC; --amber:#D98A16; --jade:#0E8A6B; --rose:#C1394A;
+  --on-accent:#FFFFFF;
+  --fill:#0F1E2E; --on-fill:#FFFFFF; --on-fill-dim:#9DB2C7;
+  --fd:'Bricolage Grotesque','Noto Sans TC','PingFang TC',sans-serif;
+  --fb:'Noto Sans TC','PingFang TC',system-ui,sans-serif;
+  --fm:'IBM Plex Mono','Noto Sans TC',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#E7EDF3; --soft:#9CB0C4; --ground:#0C151E; --card:#16212C; --line:#2C3C4B;
+    --wash:#101A24; --grid:#233241;
+    --ultra:#8AA0FF; --ultra-hi:#A9B9FF; --amber:#E8A63C; --jade:#37B896; --rose:#EC7183;
+    --on-accent:#0C151E;
+    --fill:#E7EDF3; --on-fill:#0C151E; --on-fill-dim:#4A5D72;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E7EDF3; --soft:#9CB0C4; --ground:#0C151E; --card:#16212C; --line:#2C3C4B;
+  --wash:#101A24; --grid:#233241;
+  --ultra:#8AA0FF; --ultra-hi:#A9B9FF; --amber:#E8A63C; --jade:#37B896; --rose:#EC7183;
+  --on-accent:#0C151E;
+  --fill:#E7EDF3; --on-fill:#0C151E; --on-fill-dim:#4A5D72;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink); font-family:var(--fb);
+  margin:0; padding:20px 14px 44px; min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px;margin:0 auto}
+
+.eyebrow{font-family:var(--fm);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin:0 0 6px}
+h1{font-family:var(--fd);font-weight:800;font-size:29px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px;text-wrap:balance}
+.lede{font-size:13px;color:var(--soft);margin:0 0 18px;line-height:1.7;max-width:60ch}
+
+/* 流程軌 */
+.rail{display:flex;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.step{flex:1;min-width:0;border:none;background:transparent;padding:11px 6px;cursor:pointer;text-align:center;position:relative;font-family:var(--fb);border-right:1px solid var(--line);color:var(--ink)}
+.step:last-child{border-right:none}
+.step[aria-selected="true"]{background:var(--fill)}
+.step[aria-selected="true"] .step-l{color:var(--on-fill)}
+.step[aria-selected="true"] .step-s,.step[aria-selected="true"] .step-n{color:var(--on-fill-dim)}
+.step-n{font-family:var(--fm);font-size:10px;color:var(--soft);display:block}
+.step-l{font-family:var(--fd);font-weight:700;font-size:15px;display:block;line-height:1.3}
+.step-s{font-size:10px;color:var(--soft);display:block}
+.dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dot[data-done="1"]{background:var(--jade)}
+.step:focus-visible{outline:2px solid var(--ultra);outline-offset:-3px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:14px}
+.panel[hidden]{display:none}
+h2{font-family:var(--fd);font-weight:700;font-size:18px;margin:0 0 4px}
+.hint{font-size:12px;color:var(--soft);margin:0 0 14px;line-height:1.7}
+
+.field{margin-bottom:12px}
+.field label,.pick label{display:block;font-size:12px;font-weight:500;color:var(--soft);margin-bottom:5px}
+.in,.ta,.sel{width:100%;font-family:var(--fb);font-size:14px;color:var(--ink);background:var(--wash);
+  border:1px solid var(--line);border-radius:3px;padding:9px 10px;line-height:1.6}
+.ta{resize:vertical;min-height:74px}
+.in:focus-visible,.ta:focus-visible,.sel:focus-visible{outline:2px solid var(--ultra);outline-offset:1px}
+.tones{display:flex;flex-wrap:wrap;gap:6px}
+.tone{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--soft);cursor:pointer;font-family:var(--fb)}
+.tone[aria-pressed="true"]{background:var(--fill);color:var(--on-fill);border-color:var(--fill)}
+
+.btn{font-family:var(--fb);font-size:13px;font-weight:500;padding:10px 16px;border-radius:3px;cursor:pointer;
+  border:1px solid var(--fill);background:transparent;color:var(--ink)}
+.btn:hover{background:var(--fill);color:var(--on-fill)}
+.btn-p{background:var(--ultra);border-color:var(--ultra);color:var(--on-accent)}
+.btn-p:hover{background:var(--ultra-hi);border-color:var(--ultra-hi);color:var(--on-accent)}
+.btn-s{padding:6px 11px;font-size:12px}
+.btn:focus-visible{outline:2px solid var(--ultra);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.err{font-size:12px;color:var(--rose);margin:10px 0 0;line-height:1.6}
+.note{font-size:11px;color:var(--soft);line-height:1.7;margin:14px 0 0}
+
+/* 提示詞交接 */
+.relay{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}
+.relay[hidden]{display:none}
+.relay-h{font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ultra);margin:0 0 6px}
+.prompt{font-family:var(--fm);font-size:11.5px;line-height:1.65;white-space:pre-wrap;background:var(--wash);
+  border:1px solid var(--line);border-radius:3px;padding:11px 12px;max-height:210px;overflow:auto;margin:0 0 10px}
+.relay-steps{font-size:12px;color:var(--soft);line-height:1.8;margin:0 0 10px;padding-left:1.1em}
+.relay-steps li::marker{font-family:var(--fm);color:var(--ultra)}
+
+/* 文案卡 */
+.out{border-top:1px solid var(--line);padding:14px 0}
+.out:first-child{border-top:none;padding-top:0}
+.tag{font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ultra);margin:0 0 6px}
+.body{font-size:14px;line-height:1.8;white-space:pre-wrap;margin:0 0 10px}
+.subj{font-family:var(--fd);font-weight:700;font-size:15px;margin:0 0 6px}
+
+/* 過審 */
+.level{display:inline-block;font-family:var(--fd);font-weight:800;font-size:13px;padding:5px 12px;border-radius:3px;color:var(--on-accent)}
+.summary{font-size:13px;color:var(--soft)}
+.find{border-left:3px solid var(--line);padding:2px 0 2px 12px;margin-bottom:14px}
+.phrase{font-family:var(--fm);font-size:14px;font-weight:600;margin:0 0 4px}
+.why{font-size:12px;color:var(--soft);margin:0 0 6px;line-height:1.6}
+.sug{font-size:13px;background:var(--wash);border-radius:3px;padding:8px 10px;margin:0;line-height:1.6}
+.sug b{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--jade);display:block;margin-bottom:3px;font-weight:600}
+
+/* 檢查清單 */
+.meter{height:6px;background:var(--wash);border-radius:3px;overflow:hidden;margin:0 0 4px}
+.meter div{height:100%;background:var(--jade);transition:width .3s ease}
+.meter-l{font-family:var(--fm);font-size:11px;color:var(--soft);margin:0 0 14px;font-variant-numeric:tabular-nums}
+.check{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+.check:first-child{border-top:none}
+.check input{margin:2px 0 0;width:17px;height:17px;accent-color:var(--jade);flex:none}
+.check label{font-size:14px;line-height:1.5;cursor:pointer}
+.check[data-done="1"] label{color:var(--soft);text-decoration:line-through}
+.check input:focus-visible{outline:2px solid var(--ultra);outline-offset:2px}
+.auto{font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--jade);border:1px solid var(--jade);border-radius:2px;padding:1px 4px;margin-left:6px;white-space:nowrap;text-decoration:none;display:inline-block}
+.x{margin-left:auto;border:none;background:none;color:var(--soft);opacity:.5;cursor:pointer;font-size:16px;line-height:1;padding:0 4px;flex:none}
+.x:focus-visible{outline:2px solid var(--ultra);outline-offset:2px;opacity:1}
+.x:hover{color:var(--rose);opacity:1}
+
+/* 覆盤 */
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;padding:0}
+.stats div{background:var(--wash);border-radius:3px;padding:9px}
+.stats dt{font-size:10px;color:var(--soft);margin:0 0 3px}
+.stats dd{margin:0;font-family:var(--fm);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plot{position:relative;margin-top:4px}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-100%);background:var(--card);
+  border:1px solid var(--line);border-radius:3px;padding:6px 8px;font-size:12px;line-height:1.45;white-space:nowrap;
+  box-shadow:0 2px 10px rgba(15,30,46,.14);transition:opacity .12s ease}
+.tip b{font-family:var(--fm);font-variant-numeric:tabular-nums;display:block;font-weight:600}
+.tbl-wrap{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;font-size:12px;min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:5px 10px 5px 0;text-align:left;white-space:nowrap}
+th{font-family:var(--fm);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);font-weight:500}
+td.n{text-align:right;font-family:var(--fm);font-variant-numeric:tabular-nums;padding-right:14px}
+details summary{font-size:12px;color:var(--soft);cursor:pointer;margin-top:12px}
+details summary:focus-visible{outline:2px solid var(--ultra);outline-offset:2px}
+
+.toast{position:sticky;bottom:8px;font-family:var(--fm);font-size:11px;color:var(--soft);text-align:center;padding-top:6px;min-height:1.4em}
+
+@media (max-width:480px){
+  h1{font-size:24px}
+  .step-l{font-size:13px}
+  .step-s{display:none}
+  .picks{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.meter div,.tip{transition:none}}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">檔期作戰台</p>
+  <h1>一段賣點，走完四關再上檔</h1>
+  <p class="lede">寫、審、查、看成效串成一條線。上一關的產出直接送進下一關，不用複製貼上在四個工具之間搬。</p>
+
+  <div class="rail" role="tablist" aria-label="檔期流程">
+    <button class="step" role="tab" id="tab0" aria-controls="panel0" aria-selected="true">
+      <span class="dot" data-done="0"></span><span class="step-n">01</span>
+      <span class="step-l">產出</span><span class="step-s">四平台文案</span>
+    </button>
+    <button class="step" role="tab" id="tab1" aria-controls="panel1" aria-selected="false" tabindex="-1">
+      <span class="dot" data-done="0"></span><span class="step-n">02</span>
+      <span class="step-l">過審</span><span class="step-s">用語風險</span>
+    </button>
+    <button class="step" role="tab" id="tab2" aria-controls="panel2" aria-selected="false" tabindex="-1">
+      <span class="dot" data-done="0"></span><span class="step-n">03</span>
+      <span class="step-l">上檔</span><span class="step-s">檢查清單</span>
+    </button>
+    <button class="step" role="tab" id="tab3" aria-controls="panel3" aria-selected="false" tabindex="-1">
+      <span class="dot" data-done="0"></span><span class="step-n">04</span>
+      <span class="step-l">覆盤</span><span class="step-s">成效回看</span>
+    </button>
+  </div>
+
+  <!-- 01 產出 -->
+  <div id="panel0" role="tabpanel" aria-labelledby="tab0">
+    <section class="panel">
+      <h2>填一次，出四版</h2>
+      <p class="hint">同一組賣點會依各平台的閱讀習慣分開寫，不是同一段話改長短。這頁不會自己連線，按下按鈕會把提示詞整理好，你貼進 Claude 對話框，再把回覆貼回來。</p>
+
+      <div class="field">
+        <label for="f-product">產品或活動名稱</label>
+        <input id="f-product" class="in" data-form="product" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-points">核心賣點</label>
+        <textarea id="f-points" class="ta" data-form="points" placeholder="規格、功能、和競品的差別，條列就好"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-audience">目標受眾</label>
+        <textarea id="f-audience" class="ta" data-form="audience" placeholder="年齡、職業、他們在煩惱什麼"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-offer">檔期與優惠</label>
+        <input id="f-offer" class="in" data-form="offer" placeholder="日期、折扣、贈品、限量條件" autocomplete="off">
+      </div>
+      <div class="field">
+        <label id="tone-label">語調</label>
+        <div class="tones" id="tones" role="group" aria-labelledby="tone-label"></div>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-p" id="gen">產出四版文案</button>
+        <button class="btn btn-s" id="demo">帶入示範資料</button>
+      </div>
+      <p class="err" id="gen-err" hidden></p>
+
+      <div class="relay" id="gen-relay" hidden>
+        <p class="relay-h">提示詞</p>
+        <pre class="prompt" id="gen-prompt"></pre>
+        <ol class="relay-steps">
+          <li>複製提示詞，貼到 Claude 對話框送出</li>
+          <li>把回覆整段複製，貼進下面的框</li>
+        </ol>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn btn-s" id="gen-copy">複製提示詞</button>
+        </div>
+        <label class="hint" for="gen-paste" style="display:block;margin-bottom:5px">貼上 Claude 的回覆</label>
+        <textarea id="gen-paste" class="ta" placeholder='{"fb":"...","ig":"...","line":"...","edm_subject":"...","edm_body":"..."}'></textarea>
+        <p class="err" id="gen-parse-err" hidden></p>
+      </div>
+    </section>
+    <section class="panel" id="copies" hidden></section>
+  </div>
+
+  <!-- 02 過審 -->
+  <div id="panel1" role="tabpanel" aria-labelledby="tab1" hidden>
+    <section class="panel">
+      <h2>上線前先挑毛病</h2>
+      <p class="hint">找絕對化用語、無法證實的宣稱、寫不清楚的優惠條件。從上一關送過來的文案會自動填在這裡。</p>
+      <textarea id="draft" class="ta" style="min-height:140px" placeholder="貼上要檢查的文案" aria-label="待檢查文案"></textarea>
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-p" id="rev">檢查用語風險</button>
+      </div>
+      <p class="err" id="rev-err" hidden></p>
+
+      <div class="relay" id="rev-relay" hidden>
+        <p class="relay-h">提示詞</p>
+        <pre class="prompt" id="rev-prompt"></pre>
+        <ol class="relay-steps">
+          <li>複製提示詞，貼到 Claude 對話框送出</li>
+          <li>把回覆整段複製，貼進下面的框</li>
+        </ol>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn btn-s" id="rev-copy">複製提示詞</button>
+        </div>
+        <label class="hint" for="rev-paste" style="display:block;margin-bottom:5px">貼上 Claude 的回覆</label>
+        <textarea id="rev-paste" class="ta" placeholder='{"level":"中","summary":"...","findings":[...]}'></textarea>
+        <p class="err" id="rev-parse-err" hidden></p>
+      </div>
+    </section>
+    <section class="panel" id="review" hidden></section>
+  </div>
+
+  <!-- 03 上檔 -->
+  <div id="panel2" role="tabpanel" aria-labelledby="tab2" hidden>
+    <section class="panel">
+      <h2>上檔前的最後一遍</h2>
+      <p class="hint">前兩項會依前面兩關的完成狀況自動打勾，其他要自己確認。勾選狀態會留在這台裝置的瀏覽器裡。</p>
+      <div class="meter"><div id="meter-bar" style="width:0%"></div></div>
+      <p class="meter-l" id="meter-label">0 / 10 完成</p>
+      <div id="checklist"></div>
+      <div class="row" style="margin-top:14px">
+        <input id="new-check" class="in" style="flex:1;min-width:140px" placeholder="加一項你們自己的檢查" aria-label="新增檢查項目" autocomplete="off">
+        <button class="btn" id="add-check">加入</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- 04 覆盤 -->
+  <div id="panel3" role="tabpanel" aria-labelledby="tab3" hidden>
+    <section class="panel">
+      <h2>檔期跑完，看數字</h2>
+      <p class="hint">選擇 GA4 或廣告後台匯出的檔案，Excel（.xlsx）和 CSV 都可以。也能把 CSV 內容直接貼在下面。第一列要是欄位名稱。</p>
+      <div class="row" style="margin-bottom:10px">
+        <input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm,text/csv" style="font-size:12px">
+      </div>
+      <textarea id="csv-paste" class="ta" aria-label="貼上 CSV" placeholder="通路,花費,轉換數&#10;Google,180000,420&#10;Meta,240000,440"></textarea>
+      <p class="err" id="csv-err" hidden></p>
+      <div id="data" hidden>
+        <div class="picks">
+          <div class="pick">
+            <label for="col-label">分類欄位</label>
+            <select id="col-label" class="sel"></select>
+          </div>
+          <div class="pick">
+            <label for="col-value">要看的數字</label>
+            <select id="col-value" class="sel"></select>
+          </div>
+        </div>
+        <dl class="stats" id="stats"></dl>
+        <div class="plot" id="plot"><div class="tip" id="tip"></div></div>
+        <p class="note" id="plot-note"></p>
+        <details>
+          <summary>看表格</summary>
+          <div class="tbl-wrap" id="tbl"></div>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  var KEY = "campaign-desk-v1";
+  var TONES = ["專業穩重", "親切口語", "年輕潮流", "急迫促購"];
+  var BASE_CHECKS = [
+    { id: "k1", text: "文案已產出", auto: "generated" },
+    { id: "k2", text: "已過用語風險檢查", auto: "reviewed" },
+    { id: "k3", text: "售價、折扣、贈品與後台設定一致" },
+    { id: "k4", text: "庫存足夠，缺貨品項已下架" },
+    { id: "k5", text: "素材尺寸符合各平台規格" },
+    { id: "k6", text: "連結已加 UTM 參數並實測可開" },
+    { id: "k7", text: "優惠條件與期限在頁面上寫清楚" },
+    { id: "k8", text: "客服已收到本檔期問答" },
+    { id: "k9", text: "主管或法務已確認宣稱用語" },
+    { id: "k10", text: "GA4 與 Pixel 追蹤碼已驗證觸發" }
+  ];
+  var DEMO = {
+    product: "MSI Claw 掌上型電競主機",
+    points: "8 吋 120Hz 螢幕、Intel Core Ultra 處理器、53Whr 電池可連玩 3 小時、內建 MSI Center M 一鍵調校",
+    audience: "25-40 歲上班族電競玩家，通勤與出差時間長，已有桌機但想要外出也能玩 3A 大作",
+    offer: "9/1-9/15 開學檔期，官網下單折 3000 元，前 100 名加贈原廠收納包",
+    tone: "親切口語"
+  };
+
+  var S = {
+    stage: 0,
+    form: { product: "", points: "", audience: "", offer: "", tone: TONES[1] },
+    copies: null,
+    draft: "",
+    review: null,
+    checked: {},
+    extras: [],
+    rows: null,
+    labelCol: "",
+    valueCol: ""
+  };
+
+  /* ── 存檔（留在這台裝置的瀏覽器裡） ── */
+  var saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try {
+        localStorage.setItem(KEY, JSON.stringify({
+          form: S.form, copies: S.copies, draft: S.draft,
+          review: S.review, checked: S.checked, extras: S.extras
+        }));
+      } catch (e) { /* 存不進去就算了，不打斷手上的事 */ }
+    }, 400);
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (s.form) S.form = Object.assign(S.form, s.form);
+      S.copies = s.copies || null;
+      S.review = s.review || null;
+      S.draft = s.draft || "";
+      S.checked = s.checked || {};
+      S.extras = s.extras || [];
+    } catch (e) { /* 第一次使用，沒有存檔是正常的 */ }
+  }
+
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var toastTimer = null;
+  function flash(m) {
+    $("toast").textContent = m;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { $("toast").textContent = ""; }, 2200);
+  }
+  function show(el, on) { el.hidden = !on; }
+  function err(el, msg) {
+    el.textContent = msg || "";
+    el.hidden = !msg;
+  }
+  function copyText(t, el) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () { flash("已複製"); }, function () { selectFallback(el); });
+    } else { selectFallback(el); }
+  }
+  function selectFallback(el) {
+    if (el) {
+      var r = document.createRange();
+      r.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+      flash("這個環境不給複製，已選取，請按 Ctrl/⌘ + C");
+    } else {
+      flash("這個環境不給複製，請手動選取");
+    }
+  }
+  function parseJson(text) {
+    var clean = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+    var start = clean.indexOf("{"), end = clean.lastIndexOf("}");
+    return JSON.parse(start >= 0 ? clean.slice(start, end + 1) : clean);
+  }
+  function debounce(fn, ms) {
+    var t = null;
+    return function () {
+      var a = arguments, self = this;
+      clearTimeout(t);
+      t = setTimeout(function () { fn.apply(self, a); }, ms);
+    };
+  }
+
+  /* ── 流程軌 ── */
+  var tabs = [$("tab0"), $("tab1"), $("tab2"), $("tab3")];
+  var panels = [$("panel0"), $("panel1"), $("panel2"), $("panel3")];
+  function setStage(i) {
+    S.stage = i;
+    tabs.forEach(function (t, n) {
+      t.setAttribute("aria-selected", n === i ? "true" : "false");
+      t.tabIndex = n === i ? 0 : -1;
+      panels[n].hidden = n !== i;
+    });
+    if (i === 3) drawChart();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { setStage(i); });
+    t.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var n = (i + d + tabs.length) % tabs.length;
+      setStage(n);
+      tabs[n].focus();
+    });
+  });
+  function syncDots() {
+    var done = [!!S.copies, !!S.review, pct() === 100, !!S.rows];
+    tabs.forEach(function (t, i) {
+      t.querySelector(".dot").setAttribute("data-done", done[i] ? "1" : "0");
+    });
+  }
+
+  /* ── 01 產出 ── */
+  function syncForm() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-form]"), function (el) {
+      el.value = S.form[el.getAttribute("data-form")] || "";
+    });
+    Array.prototype.forEach.call($("tones").children, function (b) {
+      b.setAttribute("aria-pressed", b.textContent === S.form.tone ? "true" : "false");
+    });
+  }
+  TONES.forEach(function (t) {
+    var b = document.createElement("button");
+    b.className = "tone";
+    b.type = "button";
+    b.textContent = t;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () { S.form.tone = t; syncForm(); save(); });
+    $("tones").appendChild(b);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-form]"), function (el) {
+    el.addEventListener("input", function () {
+      S.form[el.getAttribute("data-form")] = el.value;
+      save();
+    });
+  });
+  $("demo").addEventListener("click", function () {
+    S.form = Object.assign({}, DEMO);
+    syncForm();
+    save();
+    flash("已帶入示範資料");
+  });
+
+  function genPrompt() {
+    var f = S.form;
+    return "你是台灣電商的資深行銷文案。用繁體中文，依下列資料寫四個平台的貼文。\n\n" +
+      "產品：" + f.product + "\n" +
+      "核心賣點：" + f.points + "\n" +
+      "目標受眾：" + (f.audience || "未指定") + "\n" +
+      "檔期與優惠：" + (f.offer || "未指定") + "\n" +
+      "語調：" + f.tone + "\n\n" +
+      "規則：\n" +
+      "- 不要使用「最」「第一」「唯一」「保證」等絕對化或誇大用語\n" +
+      "- 不要提未經證實的療效或效能數字\n" +
+      "- 每個平台照它的閱讀習慣寫，不要只是同一段話改長短\n\n" +
+      "只輸出 JSON，不要任何說明文字或程式碼標記：\n" +
+      '{"fb":"120字內，開頭一句抓住痛點","ig":"80字內口語，結尾附5個hashtag","line":"50字內，直接講優惠與行動","edm_subject":"20字內主旨","edm_body":"100字內信件內文"}';
+  }
+  $("gen").addEventListener("click", function () {
+    if (!S.form.product.trim() || !S.form.points.trim()) {
+      err($("gen-err"), "先填產品名稱和核心賣點，其他可以空著。");
+      return;
+    }
+    err($("gen-err"), "");
+    $("gen-prompt").textContent = genPrompt();
+    show($("gen-relay"), true);
+    $("gen-paste").focus();
+  });
+  $("gen-copy").addEventListener("click", function () { copyText($("gen-prompt").textContent, $("gen-prompt")); });
+  $("gen-paste").addEventListener("input", debounce(function () {
+    var v = $("gen-paste").value.trim();
+    if (!v) { err($("gen-parse-err"), ""); return; }
+    try {
+      var j = parseJson(v);
+      if (!j.fb && !j.ig && !j.line && !j.edm_body) throw new Error("empty");
+      S.copies = j;
+      err($("gen-parse-err"), "");
+      renderCopies();
+      save();
+      syncDots();
+      flash("已讀入四版文案");
+    } catch (e) {
+      err($("gen-parse-err"), "讀不出來。請把 Claude 回覆的 JSON 整段貼上，從 { 到 } 都要。");
+    }
+  }, 250));
+
+  function renderCopies() {
+    var box = $("copies");
+    if (!S.copies) { show(box, false); box.innerHTML = ""; return; }
+    var c = S.copies, html = "";
+    [["Facebook", c.fb], ["Instagram", c.ig], ["LINE 推播", c.line]].forEach(function (p, i) {
+      if (!p[1]) return;
+      html += '<div class="out"><p class="tag">' + esc(p[0]) + '</p><p class="body">' + esc(p[1]) + '</p>' +
+        '<div class="row"><button class="btn btn-s" data-copy="' + i + '">複製</button>' +
+        '<button class="btn btn-s" data-send="' + i + '">送去過審</button></div></div>';
+    });
+    if (c.edm_body) {
+      html += '<div class="out"><p class="tag">EDM</p><p class="subj">' + esc(c.edm_subject || "") + '</p>' +
+        '<p class="body">' + esc(c.edm_body) + '</p>' +
+        '<div class="row"><button class="btn btn-s" data-copy="3">複製</button>' +
+        '<button class="btn btn-s" data-send="3">送去過審</button></div></div>';
+    }
+    box.innerHTML = html;
+    show(box, !!html);
+    var texts = [c.fb, c.ig, c.line, (c.edm_subject || "") + "\n\n" + (c.edm_body || "")];
+    Array.prototype.forEach.call(box.querySelectorAll("[data-copy]"), function (b) {
+      b.addEventListener("click", function () { copyText(texts[+b.getAttribute("data-copy")]); });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-send]"), function (b) {
+      b.addEventListener("click", function () { sendToReview(texts[+b.getAttribute("data-send")]); });
+    });
+  }
+  function sendToReview(text) {
+    S.draft = (text || "").trim();
+    $("draft").value = S.draft;
+    S.review = null;
+    $("rev-paste").value = "";
+    show($("rev-relay"), false);
+    renderReview();
+    save();
+    syncDots();
+    setStage(1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* ── 02 過審 ── */
+  $("draft").addEventListener("input", function () { S.draft = $("draft").value; save(); });
+  function revPrompt() {
+    return "你是熟悉台灣公平交易法與廣告不實規範的行銷審稿人員。檢查下面這段廣告文案的用語風險。\n\n" +
+      "文案：\n\"\"\"\n" + S.draft + "\n\"\"\"\n\n" +
+      "重點看：絕對化用語（最、第一、唯一、頂級）、誇大或無法證實的效果宣稱、涉及療效或醫療效果的措辭、比較性廣告缺乏依據、優惠條件寫不清楚、容易誤導消費者的表述。\n\n" +
+      "只輸出 JSON，不要任何說明文字或程式碼標記：\n" +
+      '{"level":"高|中|低","summary":"30字內總評","findings":[{"phrase":"原文中有問題的字詞","risk":"高|中|低","why":"30字內說明為什麼有風險","suggest":"改寫建議"}]}\n' +
+      "如果沒有問題，findings 給空陣列。";
+  }
+  $("rev").addEventListener("click", function () {
+    if (!S.draft.trim()) { err($("rev-err"), "先貼一段文案進來。"); return; }
+    err($("rev-err"), "");
+    $("rev-prompt").textContent = revPrompt();
+    show($("rev-relay"), true);
+    $("rev-paste").focus();
+  });
+  $("rev-copy").addEventListener("click", function () { copyText($("rev-prompt").textContent, $("rev-prompt")); });
+  $("rev-paste").addEventListener("input", debounce(function () {
+    var v = $("rev-paste").value.trim();
+    if (!v) { err($("rev-parse-err"), ""); return; }
+    try {
+      var j = parseJson(v);
+      if (!j.level && !j.findings) throw new Error("empty");
+      S.review = j;
+      err($("rev-parse-err"), "");
+      renderReview();
+      save();
+      syncDots();
+      renderChecklist();
+      flash("已讀入檢查結果");
+    } catch (e) {
+      err($("rev-parse-err"), "讀不出來。請把 Claude 回覆的 JSON 整段貼上，從 { 到 } 都要。");
+    }
+  }, 250));
+
+  function riskColor(v) {
+    return v === "高" ? "var(--rose)" : v === "中" ? "var(--amber)" : "var(--jade)";
+  }
+  function renderReview() {
+    var box = $("review");
+    if (!S.review) { show(box, false); box.innerHTML = ""; return; }
+    var r = S.review;
+    var html = '<div class="row" style="margin-bottom:12px">' +
+      '<span class="level" style="background:' + riskColor(r.level) + '">風險 ' + esc(r.level || "未標") + "</span>" +
+      '<span class="summary">' + esc(r.summary || "") + "</span></div>";
+    var f = r.findings || [];
+    if (!f.length) {
+      html += '<p style="font-size:14px;margin:0">沒有挑到明顯的用語問題。仍建議請主管或法務再看一次。</p>';
+    } else {
+      f.forEach(function (x) {
+        html += '<div class="find" style="border-left-color:' + (x.risk === "高" ? "var(--rose)" : x.risk === "中" ? "var(--amber)" : "var(--line)") + '">' +
+          '<p class="phrase">' + esc(x.phrase || "") + "</p>" +
+          '<p class="why">' + esc(x.why || "") + "</p>" +
+          (x.suggest ? '<p class="sug"><b>改成</b>' + esc(x.suggest) + "</p>" : "") + "</div>";
+      });
+    }
+    html += '<p class="note">這是初步檢查，不是法律意見。實際刊登前請依公平交易法與各平台規範，交由法務或主管確認。</p>';
+    box.innerHTML = html;
+    show(box, true);
+  }
+
+  /* ── 03 上檔 ── */
+  function allChecks() { return BASE_CHECKS.concat(S.extras); }
+  function autoState() { return { generated: !!S.copies, reviewed: !!S.review }; }
+  function isDone(c) {
+    var a = autoState();
+    return c.auto ? (a[c.auto] || !!S.checked[c.id]) : !!S.checked[c.id];
+  }
+  function pct() {
+    var list = allChecks();
+    if (!list.length) return 0;
+    return Math.round(list.filter(isDone).length / list.length * 100);
+  }
+  function renderChecklist() {
+    var list = allChecks(), a = autoState(), box = $("checklist"), html = "";
+    list.forEach(function (c) {
+      var done = isDone(c), autoDone = c.auto && a[c.auto];
+      html += '<div class="check" data-done="' + (done ? 1 : 0) + '">' +
+        '<input type="checkbox" id="chk-' + esc(c.id) + '"' + (done ? " checked" : "") + (autoDone ? " disabled" : "") + '>' +
+        '<label for="chk-' + esc(c.id) + '">' + esc(c.text) + (autoDone ? '<span class="auto">自動</span>' : "") + "</label>" +
+        (c.auto || BASE_CHECKS.some(function (b) { return b.id === c.id; }) ? "" :
+          '<button class="x" data-del="' + esc(c.id) + '" aria-label="刪除 ' + esc(c.text) + '">×</button>') +
+        "</div>";
+    });
+    box.innerHTML = html;
+    list.forEach(function (c) {
+      var el = $("chk-" + c.id);
+      if (!el) return;
+      el.addEventListener("change", function () {
+        S.checked[c.id] = el.checked;
+        renderChecklist();
+        save();
+      });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-del]"), function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-del");
+        S.extras = S.extras.filter(function (x) { return x.id !== id; });
+        delete S.checked[id];
+        renderChecklist();
+        save();
+      });
+    });
+    var doneCount = list.filter(isDone).length;
+    $("meter-bar").style.width = pct() + "%";
+    $("meter-label").textContent = doneCount + " / " + list.length + " 完成";
+    syncDots();
+  }
+  function addCheck() {
+    var v = $("new-check").value.trim();
+    if (!v) return;
+    S.extras.push({ id: "x" + Date.now(), text: v });
+    $("new-check").value = "";
+    renderChecklist();
+    save();
+  }
+  $("add-check").addEventListener("click", addCheck);
+  $("new-check").addEventListener("keydown", function (e) { if (e.key === "Enter") addCheck(); });
+
+  /* ── 04 覆盤：讀檔 ── */
+  function toNum(v) {
+    if (typeof v === "number") return isFinite(v) ? v : null;
+    if (v == null) return null;
+    var t = String(v).trim().replace(/^(NT\$|US\$|\$|￥|€|£)/i, "").replace(/[,\s]/g, "").replace(/%$/, "");
+    if (t === "" || !/^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(t)) return null;
+    return parseFloat(t);
+  }
+  function typed(v) {
+    var n = toNum(v);
+    return n === null ? String(v == null ? "" : v).trim() : n;
+  }
+  function splitCsv(text, delim) {
+    var rows = [], row = [], field = "", q = false, i, c;
+    for (i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+        else field += c;
+      } else if (c === '"') { q = true; }
+      else if (c === delim) { row.push(field); field = ""; }
+      else if (c === "\n") { row.push(field); field = ""; rows.push(row); row = []; }
+      else if (c !== "\r") { field += c; }
+    }
+    row.push(field);
+    rows.push(row);
+    return rows.filter(function (r) { return r.some(function (x) { return String(x).trim() !== ""; }); });
+  }
+  function sniff(line) {
+    var best = ",", n = -1;
+    [",", "\t", ";", "|"].forEach(function (d) {
+      var c = line.split(d).length - 1;
+      if (c > n) { n = c; best = d; }
+    });
+    return best;
+  }
+  function toObjects(grid) {
+    if (!grid.length) return [];
+    var head = grid[0].map(function (h, i) {
+      var t = String(h == null ? "" : h).trim();
+      return t || "欄位" + (i + 1);
+    });
+    var seen = {};
+    head = head.map(function (h) {
+      if (seen[h]) { seen[h]++; return h + " " + seen[h]; }
+      seen[h] = 1;
+      return h;
+    });
+    return grid.slice(1).map(function (r) {
+      var o = {};
+      head.forEach(function (h, i) { o[h] = typed(r[i]); });
+      return o;
+    });
+  }
+  // 二進位檔（xlsx 其實是壓縮檔，開頭是 PK）被當成文字讀就會變亂碼
+  function looksBinary(s) {
+    if (s.charCodeAt(0) === 80 && s.charCodeAt(1) === 75) return true;
+    for (var i = 0; i < Math.min(s.length, 3000); i++) {
+      var code = s.charCodeAt(i);
+      if (code < 9) return true;
+    }
+    return false;
+  }
+  function handleCsv(text) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    text = text.trim();
+    if (!text) return;
+    if (looksBinary(text)) {
+      err($("csv-err"), "這看起來是 Excel 檔的內容，不是文字。請用上面的「選擇檔案」直接選 .xlsx。");
+      return;
+    }
+    var grid = splitCsv(text, sniff(text.split("\n")[0]));
+    applyRows(toObjects(grid));
+  }
+  function readCsvFile(buf) {
+    // 台灣的 Excel 匯出常是 Big5，先試 UTF-8，出現亂碼再退回 Big5
+    var text = new TextDecoder("utf-8").decode(buf);
+    if (text.indexOf(String.fromCharCode(0xFFFD)) >= 0) {
+      try { text = new TextDecoder("big5").decode(buf); }
+      catch (e) { /* 瀏覽器不支援 big5 就沿用 UTF-8 的結果 */ }
+    }
+    handleCsv(text);
+  }
+
+  /* xlsx 是壓縮檔，用瀏覽器內建的解壓縮讀出第一個工作表 */
+  function unzip(buf) {
+    var dv = new DataView(buf), u8 = new Uint8Array(buf), eocd = -1, i;
+    for (i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--) {
+      if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error("not a zip");
+    var count = dv.getUint16(eocd + 10, true), off = dv.getUint32(eocd + 16, true), files = {}, n;
+    for (n = 0; n < count; n++) {
+      if (off + 46 > u8.length || dv.getUint32(off, true) !== 0x02014b50) break;
+      var method = dv.getUint16(off + 10, true);
+      var csize = dv.getUint32(off + 20, true);
+      var nameLen = dv.getUint16(off + 28, true);
+      var extraLen = dv.getUint16(off + 30, true);
+      var cmtLen = dv.getUint16(off + 32, true);
+      var lho = dv.getUint32(off + 42, true);
+      var name = new TextDecoder("utf-8").decode(u8.subarray(off + 46, off + 46 + nameLen));
+      var start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+      files[name] = { method: method, data: u8.subarray(start, start + csize) };
+      off += 46 + nameLen + extraLen + cmtLen;
+    }
+    return files;
+  }
+  function inflate(entry) {
+    if (!entry) return Promise.resolve(null);
+    if (entry.method === 0) return Promise.resolve(new TextDecoder("utf-8").decode(entry.data));
+    if (typeof DecompressionStream !== "function") return Promise.reject(new Error("no inflate"));
+    var stream = new Blob([entry.data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return new Response(stream).text();
+  }
+  function xmlDoc(text) { return new DOMParser().parseFromString(text, "application/xml"); }
+  function colIndex(ref) {
+    var m = /^([A-Z]+)/.exec(ref || ""), n = 0, i;
+    if (!m) return 0;
+    for (i = 0; i < m[1].length; i++) n = n * 26 + (m[1].charCodeAt(i) - 64);
+    return n - 1;
+  }
+  function readWorkbook(buf) {
+    var files;
+    try { files = unzip(buf); }
+    catch (e) { err($("csv-err"), "這個 Excel 檔打不開，另存成 CSV 再試一次。"); return; }
+
+    var sheetPath = "xl/worksheets/sheet1.xml";
+    Promise.all([inflate(files["xl/workbook.xml"]), inflate(files["xl/_rels/workbook.xml.rels"])])
+      .then(function (r) {
+        try {
+          var sheet = xmlDoc(r[0]).getElementsByTagName("sheet")[0];
+          var rid = sheet.getAttribute("r:id") || sheet.getAttribute("id");
+          var rels = xmlDoc(r[1]).getElementsByTagName("Relationship");
+          for (var i = 0; i < rels.length; i++) {
+            if (rels[i].getAttribute("Id") === rid) {
+              sheetPath = "xl/" + rels[i].getAttribute("Target").replace(/^\//, "").replace(/^xl\//, "");
+            }
+          }
+        } catch (e) { /* 找不到就用第一個工作表的預設路徑 */ }
+        if (!files[sheetPath]) {
+          sheetPath = Object.keys(files).filter(function (k) { return /^xl\/worksheets\/.+\.xml$/.test(k); }).sort()[0];
+        }
+        return Promise.all([inflate(files[sheetPath]), inflate(files["xl/sharedStrings.xml"])]);
+      })
+      .then(function (r) {
+        var strings = [], i, j;
+        if (r[1]) {
+          var si = xmlDoc(r[1]).getElementsByTagName("si");
+          for (i = 0; i < si.length; i++) {
+            var ts = si[i].getElementsByTagName("t"), s = "";
+            for (j = 0; j < ts.length; j++) s += ts[j].textContent;
+            strings.push(s);
+          }
+        }
+        var rowsX = xmlDoc(r[0]).getElementsByTagName("row"), grid = [], width = 0;
+        for (var a = 0; a < rowsX.length; a++) {
+          var cells = rowsX[a].getElementsByTagName("c"), line = [];
+          for (var b = 0; b < cells.length; b++) {
+            var c = cells[b], idx = colIndex(c.getAttribute("r")), t = c.getAttribute("t"), val = "";
+            var vEl = c.getElementsByTagName("v")[0];
+            if (t === "s") val = strings[+(vEl ? vEl.textContent : -1)] || "";
+            else if (t === "inlineStr") {
+              var its = c.getElementsByTagName("t");
+              for (var k = 0; k < its.length; k++) val += its[k].textContent;
+            } else if (vEl) val = vEl.textContent;
+            line[idx] = val;
+          }
+          for (var z = 0; z < line.length; z++) if (line[z] === undefined) line[z] = "";
+          if (line.some(function (x) { return String(x).trim() !== ""; })) {
+            grid.push(line);
+            width = Math.max(width, line.length);
+          }
+        }
+        grid.forEach(function (line) { for (var z = 0; z < width; z++) if (line[z] === undefined) line[z] = ""; });
+        if (!grid.length) { err($("csv-err"), "第一個工作表是空的，或第一列不是欄位名稱。"); return; }
+        applyRows(toObjects(grid));
+      })
+      .catch(function () {
+        err($("csv-err"), "這個 Excel 檔打不開，另存成 CSV 再試一次。");
+      });
+  }
+
+  $("file").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    err($("csv-err"), "");
+    if (/\.xls$/i.test(f.name)) {
+      err($("csv-err"), "舊版 .xls 讀不了，請在 Excel 另存成 .xlsx 或 CSV。");
+      return;
+    }
+    var isExcel = /\.(xlsx|xlsm)$/i.test(f.name);
+    var r = new FileReader();
+    r.onload = function () { isExcel ? readWorkbook(r.result) : readCsvFile(r.result); };
+    r.onerror = function () { err($("csv-err"), "檔案讀不開，換成貼上內容試試。"); };
+    r.readAsArrayBuffer(f);
+  });
+  $("csv-paste").addEventListener("input", debounce(function () {
+    var v = $("csv-paste").value;
+    if (v.trim()) { err($("csv-err"), ""); handleCsv(v); }
+  }, 300));
+
+  function applyRows(data) {
+    if (!data || !data.length) {
+      err($("csv-err"), "讀不到資料。確認第一列是欄位名稱。");
+      return;
+    }
+    var cols = Object.keys(data[0]);
+    var numeric = cols.filter(function (c) {
+      return data.some(function (r) { return typeof r[c] === "number"; });
+    });
+    S.rows = data;
+    S.labelCol = cols.filter(function (c) { return numeric.indexOf(c) < 0; })[0] || cols[0];
+    S.valueCol = numeric[0] || cols[1] || cols[0];
+    err($("csv-err"), "");
+    renderData();
+    syncDots();
+    flash("已讀入 " + data.length + " 列");
+  }
+
+  /* ── 04 覆盤：畫面 ── */
+  function columns() { return S.rows ? Object.keys(S.rows[0]) : []; }
+  function numericCols() {
+    var rows = S.rows || [];
+    return columns().filter(function (c) {
+      return rows.some(function (r) { return typeof r[c] === "number"; });
+    });
+  }
+  function chartData() {
+    if (!S.rows || !S.labelCol || !S.valueCol) return [];
+    return S.rows.map(function (r) {
+      var nm = r[S.labelCol];
+      return {
+        name: String(nm == null || nm === "" ? "—" : nm),
+        value: toNum(r[S.valueCol]) || 0
+      };
+    }).filter(function (d) { return isFinite(d.value); }).slice(0, 30);
+  }
+  function fmt(n) {
+    if (!isFinite(n)) return "—";
+    var abs = Math.abs(n);
+    return n.toLocaleString("zh-TW", { maximumFractionDigits: abs >= 1000 ? 0 : abs >= 100 ? 1 : 2 });
+  }
+  function fillSelect(sel, list, value) {
+    sel.innerHTML = list.map(function (c) {
+      return '<option value="' + esc(c) + '"' + (c === value ? " selected" : "") + ">" + esc(c) + "</option>";
+    }).join("");
+  }
+  function renderData() {
+    if (!S.rows) { show($("data"), false); return; }
+    show($("data"), true);
+    var nums = numericCols();
+    fillSelect($("col-label"), columns(), S.labelCol);
+    fillSelect($("col-value"), nums.length ? nums : columns(), S.valueCol);
+
+    var d = chartData();
+    if (d.length) {
+      var vals = d.map(function (x) { return x.value; });
+      var sum = vals.reduce(function (a, b) { return a + b; }, 0);
+      var top = d.reduce(function (a, b) { return b.value > a.value ? b : a; });
+      $("stats").innerHTML =
+        "<div><dt>總計</dt><dd>" + fmt(sum) + "</dd></div>" +
+        "<div><dt>平均</dt><dd>" + fmt(sum / vals.length) + "</dd></div>" +
+        '<div><dt>最高</dt><dd title="' + esc(top.name) + '">' + esc(top.name) + "</dd></div>";
+    } else {
+      $("stats").innerHTML = "";
+    }
+    $("plot-note").textContent = S.rows.length > 30
+      ? "共 " + S.rows.length + " 列，圖表與表格顯示前 30 列。要看別的指標就換上面的下拉選單。"
+      : "要看別的指標就換上面的下拉選單。";
+    renderTable();
+    drawChart();
+  }
+  function renderTable() {
+    var cols = columns(), rows = (S.rows || []).slice(0, 30);
+    var html = "<table><thead><tr>" + cols.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") +
+      "</tr></thead><tbody>";
+    rows.forEach(function (r) {
+      html += "<tr>" + cols.map(function (c) {
+        var v = r[c];
+        return typeof v === "number"
+          ? '<td class="n">' + v.toLocaleString("zh-TW") + "</td>"
+          : "<td>" + esc(v) + "</td>";
+      }).join("") + "</tr>";
+    });
+    $("tbl").innerHTML = html + "</tbody></table>";
+  }
+  $("col-label").addEventListener("change", function () { S.labelCol = this.value; renderData(); });
+  $("col-value").addEventListener("change", function () { S.valueCol = this.value; renderData(); });
+
+  function niceStep(range, target) {
+    var raw = range / target, mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), norm = raw / mag;
+    return (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+  }
+  function barPath(x, w, y0, y, r) {
+    var h = Math.abs(y0 - y), rr = Math.min(r, w / 2, h);
+    if (h < 0.6) return "M" + x + " " + y0 + "h" + w;
+    if (y < y0) {
+      return "M" + x + " " + y0 + "V" + (y + rr) + "a" + rr + " " + rr + " 0 0 1 " + rr + " " + (-rr) +
+        "h" + (w - 2 * rr) + "a" + rr + " " + rr + " 0 0 1 " + rr + " " + rr + "V" + y0 + "Z";
+    }
+    return "M" + x + " " + y0 + "V" + (y - rr) + "a" + rr + " " + rr + " 0 0 0 " + rr + " " + rr +
+      "h" + (w - 2 * rr) + "a" + rr + " " + rr + " 0 0 0 " + rr + " " + (-rr) + "V" + y0 + "Z";
+  }
+  function drawChart() {
+    var plot = $("plot"), tip = $("tip");
+    if (!plot || !S.rows) return;
+    Array.prototype.slice.call(plot.children).forEach(function (el) { if (el !== tip) el.remove(); });
+    var d = chartData();
+    if (!d.length || plot.clientWidth < 40) return;
+
+    var cs = getComputedStyle(document.body);
+    var accent = cs.getPropertyValue("--ultra").trim() || "#2743D6";
+    var grid = cs.getPropertyValue("--grid").trim() || "#E4EAF0";
+    var soft = cs.getPropertyValue("--soft").trim() || "#4A5D72";
+
+    var title = document.createElement("p");
+    title.className = "tag";
+    title.style.marginBottom = "8px";
+    title.textContent = S.valueCol + "　依 " + S.labelCol;
+    plot.appendChild(title);
+
+    var W = plot.clientWidth, H = 300, m = { t: 12, r: 6, b: 66, l: 58 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var vals = d.map(function (x) { return x.value; });
+    var hi = Math.max.apply(null, vals.concat([0]));
+    var lo = Math.min.apply(null, vals.concat([0]));
+    if (hi === lo) hi = lo + 1;
+    var step = niceStep(hi - lo, 4);
+    var top = Math.ceil(hi / step) * step, bottom = Math.floor(lo / step) * step;
+    if (top === bottom) top = bottom + step;
+    var y = function (v) { return m.t + ih * (top - v) / (top - bottom); };
+    var band = iw / d.length, bw = Math.min(46, Math.max(2, band * 0.62));
+    var y0 = y(0), svg = "", v, ticks = 0;
+
+    for (v = bottom; v <= top + step / 1000 && ticks < 40; v += step, ticks++) {
+      var yy = y(v);
+      svg += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + yy + '" y2="' + yy +
+        '" stroke="' + grid + '" stroke-width="1"/>';
+      svg += '<text x="' + (m.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" fill="' + soft +
+        '" style="font-variant-numeric:tabular-nums">' +
+        esc(fmt(v)) + "</text>";
+    }
+    d.forEach(function (x, i) {
+      var bx = m.l + i * band + (band - bw) / 2;
+      svg += '<path d="' + barPath(bx, bw, y0, y(x.value), 4) + '" fill="' + accent + '"/>';
+      var label = x.name.length > 9 ? x.name.slice(0, 8) + "…" : x.name;
+      var lx = m.l + i * band + band / 2, ly = m.t + ih + 16;
+      svg += '<text x="' + lx + '" y="' + ly + '" transform="rotate(-20 ' + lx + " " + ly +
+        ')" text-anchor="end" font-size="11" fill="' + soft + '">' + esc(label) + "</text>";
+      svg += '<rect class="hit" data-i="' + i + '" x="' + (m.l + i * band) + '" y="' + m.t +
+        '" width="' + band + '" height="' + ih + '" fill="transparent"/>';
+    });
+    plot.insertAdjacentHTML("beforeend",
+      '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" height="' + H + '" role="img" aria-label="' +
+      esc(S.valueCol + " 依 " + S.labelCol + " 的長條圖，數字見下方表格") + '">' + svg + "</svg>");
+
+    Array.prototype.forEach.call(plot.querySelectorAll(".hit"), function (r) {
+      var i = +r.getAttribute("data-i"), x = d[i];
+      r.addEventListener("mouseenter", function () {
+        tip.innerHTML = esc(x.name) + "<b>" + esc(x.value.toLocaleString("zh-TW")) + "</b>";
+        tip.style.left = (m.l + i * band + band / 2) + "px";
+        tip.style.top = (Math.min(y(x.value), y0) - 8) + "px";
+        tip.style.opacity = "1";
+      });
+      r.addEventListener("mouseleave", function () { tip.style.opacity = "0"; });
+    });
+  }
+  window.addEventListener("resize", debounce(function () { if (S.stage === 3) drawChart(); }, 150));
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function () { drawChart(); });
+  }
+  new MutationObserver(function () { drawChart(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  /* ── 起手 ── */
+  load();
+  syncForm();
+  $("draft").value = S.draft;
+  renderCopies();
+  renderReview();
+  renderChecklist();
+  setStage(0);
+  syncDots();
+})();
+</script>
