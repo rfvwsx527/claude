@@ -50,12 +50,24 @@ frontmatter 的 `description`。中文名 `zh`、分類 `cat`、一句話用途 
 新掃到的 skill 會標上 `needsCuration`，卡片上顯示「待補」，分類先落在 `ops`。補完
 `zh` / `cat` / `desc` 並移除該旗標即可。
 
+## 同步目錄的位置會變
+
+`~/.claude/skills/synced/` 的結構改過版：skill 與 `manifest.json` 原本直接放在該目錄下，
+後來移到 `synced/<workspace-uuid>_<account-uuid>/` 裡。掃描器因此**動態尋找**帶有
+`manifest.json` 的那一層，不寫死路徑。
+
+一次寫死路徑造成的實際後果：2026-08-28 那趟排程掃不到任何自建 skill，把 5 個自建項目
+連同啟用狀態整批從儀表板上刪掉。所以現在多了一道防線——**掃不到同步目錄時，掃描結果
+會標上 `partial`，`update-dashboard.py` 直接以退出碼 1 拒絕改寫與發佈**。寧可當天不更新，
+也不要拿一份不完整的掃描去覆蓋正確的清單。
+
 ## 資料來源
 
 - `/mnt/skills/examples/` → `example`
 - `/mnt/skills/public/` → `builtin`
-- `~/.claude/skills/synced/` + `manifest.json` → `mine`（`source: custom`），
-  `manifest.json` 同時決定 `enabled` 與 `updatedAt`
+- `~/.claude/skills/synced/`（實際位置動態尋找）+ `manifest.json` → `mine`，
+  `manifest.json` 同時決定 `enabled` 與 `updatedAt`；manifest 出現未知的 source 值時，
+  落在同步目錄裡的一律視為自建，不留 `null`
 
 ## 每日自動更新
 

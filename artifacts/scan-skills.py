@@ -13,9 +13,27 @@ import argparse, json, os, re, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-MNT      = Path("/mnt/skills")
-SYNCED   = Path.home() / ".claude" / "skills" / "synced"
-MANIFEST = SYNCED / "manifest.json"
+MNT        = Path("/mnt/skills")
+SYNCED_BASE = Path.home() / ".claude" / "skills" / "synced"
+
+
+def synced_root() -> Path | None:
+    """找出同步目錄的實際位置。
+
+    這個路徑改過版：原本 skill 與 manifest.json 直接放在 synced/，
+    後來移到 synced/<workspace-uuid>_<account-uuid>/ 底下。寫死路徑會讓
+    自建 skill 整批掃不到，看起來就像被刪除，所以這裡動態尋找。
+    """
+    if (SYNCED_BASE / "manifest.json").is_file():
+        return SYNCED_BASE
+    found = [m.parent for m in SYNCED_BASE.glob("*/manifest.json") if m.is_file()]
+    if not found:
+        return None
+    return max(found, key=lambda d: (d / "manifest.json").stat().st_mtime)
+
+
+SYNCED   = synced_root()
+MANIFEST = (SYNCED / "manifest.json") if SYNCED else None
 
 # manifest 的 source 值 → 儀表板的來源分類
 SRC_OF_SOURCE = {"custom": "mine", "anthropic-example": "example", "anthropic": "builtin"}
@@ -66,7 +84,7 @@ def walk(root: Path) -> tuple[list[str], int, float]:
     """回傳 (相對路徑清單, 總位元組, 最新 mtime)。"""
     names, total, newest = [], 0, 0.0
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in {"__pycache__", ".git"}]
+        dirnames[:] = [d for d in dirnames if d not in {"__pycache__", ".git", ".staging"}]
         for f in filenames:
             p = Path(dirpath) / f
             try:
@@ -81,6 +99,8 @@ def walk(root: Path) -> tuple[list[str], int, float]:
 
 
 def load_manifest() -> dict[str, dict]:
+    if MANIFEST is None:
+        return {}
     try:
         data = json.loads(MANIFEST.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -108,8 +128,10 @@ def scan() -> list[dict]:
     # 同步目錄整個掃過，不倚賴 manifest 有沒有登記：
     # 直接放進目錄的 skill 也要看得見。與 /mnt 同名的視為同一個，不重複列。
     synced_names: set[str] = set()
-    if SYNCED.is_dir():
+    if SYNCED and SYNCED.is_dir():
         for d in sorted(SYNCED.iterdir()):
+            if d.name.startswith("."):          # .staging 之類的暫存目錄
+                continue
             if not (d.is_dir() and (d / "SKILL.md").is_file()):
                 continue
             synced_names.add(d.name)
@@ -183,6 +205,12 @@ def main() -> int:
         "cats": cats,
         "skills": skills,
     }
+    if SYNCED is None:
+        doc["partial"] = ("找不到同步目錄（%s 底下沒有 manifest.json）。"
+                          "這次掃描不含自建 skill，不可當成完整清單。" % SYNCED_BASE)
+    for root, _ in ROOTS:
+        if not root.is_dir():
+            doc["partial"] = "掃描來源 %s 不存在，這次掃描不完整。" % root
     text = json.dumps(doc, ensure_ascii=False, indent=1)
     if args.out:
         Path(args.out).write_text(text, encoding="utf-8")

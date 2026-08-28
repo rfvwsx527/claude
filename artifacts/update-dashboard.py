@@ -61,6 +61,10 @@ def main() -> int:
         return 1
     fresh = json.loads(scan.stdout)
 
+    if fresh.get("partial"):
+        print("掃描不完整，不改寫也不發佈：" + fresh["partial"], file=sys.stderr)
+        return 1
+
     a, b = key(current["skills"]), key(fresh["skills"])
     if a == b:
         print("沒有變動")
